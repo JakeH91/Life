@@ -220,6 +220,10 @@ export default class Life extends React.Component {
                     top: -100,
                     left: -100
                 }
+            },
+            health: {
+                ...this.state.health,
+                herbie: 0
             }
         });
         clearInterval(this.startHerbie);
