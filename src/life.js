@@ -222,7 +222,7 @@ export default class Life extends React.Component {
             }
         });
         this.startHerbieDecay = setInterval(
-            () => this.herbieDecay(), 1000
+            () => this.herbieDecay(), 2000
         );
         clearInterval(this.startHerbie);
     }
