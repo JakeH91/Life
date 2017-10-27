@@ -376,7 +376,7 @@ export default class Life extends React.Component {
         this.setState({
             positions: {
                 ...this.state.positions, // Keep all other position states the same
-                herbie: {
+                carnie: {
                     top: -100,
                     left: -100
                 }
