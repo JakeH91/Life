@@ -1,9 +1,9 @@
 import React from 'react';
 import herbie from './herbie.png';
-import herbieDying1 from './herbieDying1';
-import herbieDying2 from './herbieDying2';
-import herbieDying3 from './herbieDying3';
-import herbieDying4 from './herbieDying4';
+import herbieDying1 from './herbieDying1.png';
+import herbieDying2 from './herbieDying2.png';
+import herbieDying3 from './herbieDying3.png';
+import herbieDying4 from './herbieDying4.png';
 
 class Herbie extends React.Component {
     

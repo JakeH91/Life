@@ -216,19 +216,38 @@ export default class Life extends React.Component {
     herbieDie() {
         console.log("Herbie Died :(");
         this.setState({
-            positions: {
-                ...this.state.positions, // Keep all other position states the same
-                herbie: {
-                    top: -100,
-                    left: -100
-                }
-            },
             health: {
                 ...this.state.health,
                 herbie: 0
             }
         });
+        this.startHerbieDecay = setInterval(
+            () => this.herbieDecay(), 1000
+        );
         clearInterval(this.startHerbie);
+    }
+
+    herbieDecay() {
+        var newDeathState = this.state.dying.herbie + 1;
+        if(newDeathState !== 5){
+            this.setState({
+                dying: {
+                    ...this.state.dying,
+                    herbie: newDeathState
+                }
+            });
+        } else {
+            this.setState({
+                positions: {
+                    ...this.state.positions,
+                    herbie: {
+                        top: -100,
+                        left: -100
+                    }
+                }
+            });
+            clearInterval(this.startHerbieDecay);
+        } 
     }
 
     // Carnie Moving Logic
