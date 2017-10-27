@@ -341,11 +341,30 @@ export default class Life extends React.Component {
         });
 
         if(this.state.health.herbie <= 0){
+            var newCarnieHealth = this.state.health.carnie + this.state.nutrition.herbie;
+            this.setState({
+                health: {
+                    ...this.state.health,
+                    carnie: newCarnieHealth
+                }
+            });
             this.herbieDie();
         }
     }
 
-
+    carnieDie() {
+        console.log("Carnie Died :(");
+        this.setState({
+            positions: {
+                ...this.state.positions, // Keep all other position states the same
+                herbie: {
+                    top: -100,
+                    left: -100
+                }
+            }
+        });
+        clearInterval(this.startCarnie);
+    }
 
     componentDidMount() {
         this.startHerbie = setInterval(
