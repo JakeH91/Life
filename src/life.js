@@ -228,6 +228,16 @@ export default class Life extends React.Component {
     // Carnie Moving Logic
     carnieMove() {
         const { carnie, herbie } = this.state.positions;
+
+        // Take health over time
+        var newCarnieHealth = this.state.health.carnie - 7;
+        this.setState({
+            health: {
+                ...this.state.health,
+                carnie: newCarnieHealth
+            }
+        });
+
         // First, look around for herbies
         var herbieClose = this.carnieCheckForHerbies();
 
