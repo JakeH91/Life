@@ -44,6 +44,15 @@ export default class Life extends React.Component {
                     sight: 30
                 }
             },
+            nutrition: {
+                herbie: 500,
+                leaf: 100
+            },
+            health: {
+                herbie: 1000,
+                carnie: 2000
+            },
+
             target: {
                 herbie: -1
             }
@@ -56,85 +65,109 @@ export default class Life extends React.Component {
         const { herbie, leaf } = this.state.positions;
         const { herbie: herbieTarget } = this.state.target;
 
-        
-        var topDirection, leftDirection;
-        // If there is a leaf close by...
-        if(herbieTarget !== -1){
-            // If it's on the same y-axis, no need to changein that direction.
-            if(herbie.top === leaf[herbieTarget].top){
-                topDirection = 0;
-            } 
-            // If it's below, move downwards.
-            else if((herbie.top - leaf[herbieTarget].top) < 0) {
-                topDirection = 1;
-            } 
-            // If it's above, move upwards.
-            else if((herbie.top - leaf[herbieTarget].top) > 0) {
-                topDirection = -1;
-            }
-
-            // If it's on the same x-axis, no need to change in that direction.
-            if(herbie.left === leaf[herbieTarget].left){
-                leftDirection = 0;
-            }
-            // If it's to the right, move right.
-            else if((herbie.left - leaf[herbieTarget].left) < 0) {
-                leftDirection = 1;
-            }
-            // If it's to the left, move left.
-            else if((herbie.left - leaf[herbieTarget].left) > 0) {
-                leftDirection = -1;
-            }
-            // If with that last movement you landed on the leaf
-            if((herbie.left === leaf[herbieTarget].left) && (herbie.top === leaf[herbieTarget].top)){
-                // Eat the leaf.
-                this.herbieEatLeaf(herbieTarget);
-            }
-        } 
-        // If there is no leaf close by...
-        else {
-            this.herbieCheckForLeaves();
-            // Generate random numbers
-            topDirection = Math.floor(Math.random() * 2);
-            leftDirection = Math.floor(Math.random() * 2);
-            // If topDirection random number is 0, and Herbie is not at the top of the board
-            // (Or herbie is at the bottom or the board)
-            if((topDirection < 1 && herbie.top !== 0) || herbie.top === 100) {
-                // Move upwards.
-                topDirection = -1;
-            } 
-            // Otherwise, ff topDirection random number is 1,
-            else {
-                // Move downwards.
-                topDirection = 1;
-            }
-
-            // If leftDirection random number is 0, and Herbie is not at the absolute left of the board
-            // (Or herbie is at the absolute right or the board)
-            if((leftDirection < 1 && herbie.left !== 0) || herbie.left === 100) {
-                // Move left
-                leftDirection = -1;
-            } 
-            // Otherwise, if leftDirection random number is 1,
-            else {
-                // Mover right
-                leftDirection = 1;
-            }
-        }
-
-        // Once direction has been decided, add movement to temporary state variable,
-        var newTopState = herbie.top + topDirection;
-        var newLeftState = herbie.left + leftDirection;
-        // Then set the states to those variables
+        // Minus 5 health point
+        var newHealth = this.state.health.herbie - 5;
         this.setState({
-            positions: {
-                ...this.state.positions, // Keep all other position states the same
-                herbie: {
-                    top: newTopState,
-                    left: newLeftState
-                }
+            health: {
+                ...this.state.health,
+                herbie: newHealth
             }
         });
+
+        if(this.state.health.herbie === 0){
+            console.log("Herbie died!");
+            this.setState({
+                positions: {
+                    ...this.state.positions, // Keep all other position states the same
+                    herbie: {
+                        top: -100,
+                        left: -100
+                    }
+                }
+            });
+            clearInterval(this.startHerbie);
+        } else {
+            var topDirection, leftDirection;
+            // If there is a leaf close by...
+            if(herbieTarget !== -1){
+                // If it's on the same y-axis, no need to changein that direction.
+                if(herbie.top === leaf[herbieTarget].top){
+                    topDirection = 0;
+                } 
+                // If it's below, move downwards.
+                else if((herbie.top - leaf[herbieTarget].top) < 0) {
+                    topDirection = 1;
+                } 
+                // If it's above, move upwards.
+                else if((herbie.top - leaf[herbieTarget].top) > 0) {
+                    topDirection = -1;
+                }
+
+                // If it's on the same x-axis, no need to change in that direction.
+                if(herbie.left === leaf[herbieTarget].left){
+                    leftDirection = 0;
+                }
+                // If it's to the right, move right.
+                else if((herbie.left - leaf[herbieTarget].left) < 0) {
+                    leftDirection = 1;
+                }
+                // If it's to the left, move left.
+                else if((herbie.left - leaf[herbieTarget].left) > 0) {
+                    leftDirection = -1;
+                }
+                // If with that last movement you landed on the leaf
+                if((herbie.left === leaf[herbieTarget].left) && (herbie.top === leaf[herbieTarget].top)){
+                    // Eat the leaf.
+                    this.herbieEatLeaf(herbieTarget);
+                }
+            } 
+            // If there is no leaf close by...
+            else {
+                this.herbieCheckForLeaves();
+                // Generate random numbers
+                topDirection = Math.floor(Math.random() * 2);
+                leftDirection = Math.floor(Math.random() * 2);
+                // If topDirection random number is 0, and Herbie is not at the top of the board
+                // (Or herbie is at the bottom or the board)
+                if((topDirection < 1 && herbie.top !== 0) || herbie.top === 100) {
+                    // Move upwards.
+                    topDirection = -1;
+                } 
+                // Otherwise, ff topDirection random number is 1,
+                else {
+                    // Move downwards.
+                    topDirection = 1;
+                }
+
+                // If leftDirection random number is 0, and Herbie is not at the absolute left of the board
+                // (Or herbie is at the absolute right or the board)
+                if((leftDirection < 1 && herbie.left !== 0) || herbie.left === 100) {
+                    // Move left
+                    leftDirection = -1;
+                } 
+                // Otherwise, if leftDirection random number is 1,
+                else {
+                    // Mover right
+                    leftDirection = 1;
+                }
+            }
+
+            // Once direction has been decided, add movement to temporary state variable,
+            var newTopState = herbie.top + topDirection;
+            var newLeftState = herbie.left + leftDirection;
+            // Then set the states to those variables
+            this.setState({
+                positions: {
+                    ...this.state.positions, // Keep all other position states the same
+                    herbie: {
+                        top: newTopState,
+                        left: newLeftState
+                    }
+                }
+            });
+        }
+        
+        
     }
 
     // Herbie looking for leaves logic
@@ -168,6 +201,7 @@ export default class Life extends React.Component {
 
     // Herbie leave eating logic
     herbieEatLeaf(leafIndex) {
+        var newHealth = this.state.health.herbie + this.state.nutrition.leaf;
         // Make copy of array of all leaves
         var newLeafState = this.state.positions.leaf.slice();
         // Remove the discovered leaf from this copy
@@ -180,6 +214,10 @@ export default class Life extends React.Component {
             }, 
             target: {
                 herbie: -1
+            },
+            health: {
+                ...this.state.health,
+                herbie: newHealth
             }
         });
     }
