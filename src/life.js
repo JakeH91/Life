@@ -64,8 +64,8 @@ export default class Life extends React.Component {
         // Provide shortcuts for various bits of data
         const { herbie, leaf } = this.state.positions;
         const { herbie: herbieTarget } = this.state.target;
-        // Minus 5 health point
-        var newHealth = this.state.health.herbie - 5;
+        // Minus 7 health point
+        var newHealth = this.state.health.herbie - 7;
         this.setState({
             health: {
                 ...this.state.health,
@@ -73,18 +73,8 @@ export default class Life extends React.Component {
             }
         });
 
-        if(this.state.health.herbie === 0){
-            console.log("Herbie died!");
-            this.setState({
-                positions: {
-                    ...this.state.positions, // Keep all other position states the same
-                    herbie: {
-                        top: -100,
-                        left: -100
-                    }
-                }
-            });
-            clearInterval(this.startHerbie);
+        if(this.state.health.herbie <= 0){
+            this.herbieDie();
         } else {
             var topDirection, leftDirection;
             // If there is a leaf close by...
@@ -221,6 +211,20 @@ export default class Life extends React.Component {
         });
     }
 
+    herbieDie() {
+        console.log("Herbie Died :(");
+        this.setState({
+            positions: {
+                ...this.state.positions, // Keep all other position states the same
+                herbie: {
+                    top: -100,
+                    left: -100
+                }
+            }
+        });
+        clearInterval(this.startHerbie);
+    }
+
     // Carnie Moving Logic
     carnieMove() {
         const { carnie, herbie } = this.state.positions;
@@ -328,17 +332,20 @@ export default class Life extends React.Component {
 
     // Carnie eating Herbie Logic
     carnieEatHerbie() {
+        var newHerbieHealth = this.state.health.herbie - 200;
         this.setState({
-            positions: {
-                ...this.state.positions, // Keep all other position states the same
-                herbie: {
-                    top: -100,
-                    left: -100
-                }
+            health: {
+                ...this.state.health,
+                herbie: newHerbieHealth
             }
         });
-        clearInterval(this.startHerbie);
+
+        if(this.state.health.herbie <= 0){
+            this.herbieDie();
+        }
     }
+
+
 
     componentDidMount() {
         this.startHerbie = setInterval(
@@ -355,8 +362,13 @@ export default class Life extends React.Component {
     }
 
     render() {
+        var pStyle = {
+            color: "white"
+        };
         return(
             <div>
+                <p style={pStyle}>Herbie Health: {this.state.health.herbie}</p>
+                <p style={pStyle}>Carnie Health: {this.state.health.carnie}</p>
                 <Herbie size="40px" top={this.state.positions.herbie.top} left={this.state.positions.herbie.left} />
                 <Carnie size="40px" top={this.state.positions.carnie.top} left={this.state.positions.carnie.left}/>
                 {this.state.positions.leaf.map(leaf =>
