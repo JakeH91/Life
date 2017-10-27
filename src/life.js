@@ -64,7 +64,7 @@ export default class Life extends React.Component {
         // Provide shortcuts for various bits of data
         const { herbie, leaf } = this.state.positions;
         const { herbie: herbieTarget } = this.state.target;
-
+        // Test message
         // Minus 5 health point
         var newHealth = this.state.health.herbie - 5;
         this.setState({
