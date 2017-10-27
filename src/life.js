@@ -52,7 +52,9 @@ export default class Life extends React.Component {
                 herbie: 1000,
                 carnie: 2000
             },
-
+            dying: {
+                herbie: 0
+            },
             target: {
                 herbie: -1
             }
@@ -413,7 +415,7 @@ export default class Life extends React.Component {
             <div>
                 <p style={pStyle}>Herbie Health: {this.state.health.herbie}</p>
                 <p style={pStyle}>Carnie Health: {this.state.health.carnie}</p>
-                <Herbie size="40px" top={this.state.positions.herbie.top} left={this.state.positions.herbie.left} />
+                <Herbie size="40px" top={this.state.positions.herbie.top} left={this.state.positions.herbie.left} dying={this.state.dying.herbie} />
                 <Carnie size="40px" top={this.state.positions.carnie.top} left={this.state.positions.carnie.left}/>
                 {this.state.positions.leaf.map(leaf =>
                     <Leaf top={leaf.top} left={leaf.left}/>
