@@ -238,6 +238,11 @@ export default class Life extends React.Component {
             }
         });
 
+        // If Carnie health drops below 0, he's dead
+        if(this.state.health.carnie <= 0){
+            this.carnieDie();
+        }
+
         // First, look around for herbies
         var herbieClose = this.carnieCheckForHerbies();
 
@@ -371,6 +376,10 @@ export default class Life extends React.Component {
                     top: -100,
                     left: -100
                 }
+            },
+            health: {
+                ...this.state.health,
+                carnie: 0
             }
         });
         clearInterval(this.startCarnie);
