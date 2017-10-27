@@ -245,88 +245,90 @@ export default class Life extends React.Component {
         // If Carnie health drops below 0, he's dead
         if(this.state.health.carnie <= 0){
             this.carnieDie();
-        }
+        } else {
+            // First, look around for herbies
+            var herbieClose = this.carnieCheckForHerbies();
 
-        // First, look around for herbies
-        var herbieClose = this.carnieCheckForHerbies();
+            var topDirection, leftDirection;
+            // If there's a herbie nearby, chase it!
+            if(herbieClose) {
+                // If it's on the same y-axis, no need to changein that direction.
+                if(carnie.top === herbie.top){
+                    topDirection = 0;
+                } 
+                // If it's below, move downwards.
+                else if((carnie.top - herbie.top) < 0) {
+                    topDirection = 1;
+                } 
+                // If it's above, move upwards.
+                else if((carnie.top - herbie.top) > 0) {
+                    topDirection = -1;
+                }
 
-        var topDirection, leftDirection;
-        // If there's a herbie nearby, chase it!
-        if(herbieClose) {
-            // If it's on the same y-axis, no need to changein that direction.
-            if(carnie.top === herbie.top){
-                topDirection = 0;
-            } 
-            // If it's below, move downwards.
-            else if((carnie.top - herbie.top) < 0) {
-                topDirection = 1;
-            } 
-            // If it's above, move upwards.
-            else if((carnie.top - herbie.top) > 0) {
-                topDirection = -1;
-            }
-
-            // If it's on the same x-axis, no need to change in that direction.
-            if(carnie.left === herbie.left){
-                leftDirection = 0;
-            }
-            // If it's to the right, move right.
-            else if((carnie.left - herbie.left) < 0) {
-                leftDirection = 1;
-            }
-            // If it's to the left, move left.
-            else if((carnie.left - herbie.left) > 0) {
-                leftDirection = -1;
-            }
-            // If with that last movement you landed on the herbie
-            if((carnie.left === herbie.left) && (carnie.top === herbie.top)){
-                // Eat him.
-                this.carnieEatHerbie();
-            }
-        }
-        // If there are no herbies, move around randomly.
-        else {
-            // Generate random numbers
-            topDirection = Math.floor(Math.random() * 2);
-            leftDirection = Math.floor(Math.random() * 2);
-            // If topDirection random number is 0, and Carnie is not at the top of the board
-            // (Or carnie is at the bottom or the board)
-            if((topDirection < 1 && carnie.top !== 0) || carnie.top === 100) {
-                // Move upwards.
-                topDirection = -1;
-            } 
-            // Otherwise, ff topDirection random number is 1,
-            else {
-                // Move downwards.
-                topDirection = 1;
-            }
-
-            // If leftDirection random number is 0, and Carnie is not at the absolute left of the board
-            // (Or carnie is at the absolute right or the board)
-            if((leftDirection < 1 && carnie.left !== 0) ||carnie.left === 100) {
-                // Move left
-                leftDirection = -1;
-            } 
-            // Otherwise, if leftDirection random number is 1,
-            else {
-                // Mover right
-                leftDirection = 1;
-            }
-        }
-
-        // Once direction has been decided, add movement to temporary state variable,
-        var newTopState = carnie.top + topDirection;
-        var newLeftState = carnie.left + leftDirection;
-        // Then set the states to those variables
-        this.setState({
-            positions: {
-                ...this.state.positions, // Keep all other position states the same
-                carnie: {
-                    top: newTopState,
-                    left: newLeftState
+                // If it's on the same x-axis, no need to change in that direction.
+                if(carnie.left === herbie.left){
+                    leftDirection = 0;
+                }
+                // If it's to the right, move right.
+                else if((carnie.left - herbie.left) < 0) {
+                    leftDirection = 1;
+                }
+                // If it's to the left, move left.
+                else if((carnie.left - herbie.left) > 0) {
+                    leftDirection = -1;
+                }
+                // If with that last movement you landed on the herbie
+                if((carnie.left === herbie.left) && (carnie.top === herbie.top)){
+                    // Eat him.
+                    this.carnieEatHerbie();
                 }
             }
-        });
+            // If there are no herbies, move around randomly.
+            else {
+                // Generate random numbers
+                topDirection = Math.floor(Math.random() * 2);
+                leftDirection = Math.floor(Math.random() * 2);
+                // If topDirection random number is 0, and Carnie is not at the top of the board
+                // (Or carnie is at the bottom or the board)
+                if((topDirection < 1 && carnie.top !== 0) || carnie.top === 100) {
+                    // Move upwards.
+                    topDirection = -1;
+                } 
+                // Otherwise, ff topDirection random number is 1,
+                else {
+                    // Move downwards.
+                    topDirection = 1;
+                }
+
+                // If leftDirection random number is 0, and Carnie is not at the absolute left of the board
+                // (Or carnie is at the absolute right or the board)
+                if((leftDirection < 1 && carnie.left !== 0) ||carnie.left === 100) {
+                    // Move left
+                    leftDirection = -1;
+                } 
+                // Otherwise, if leftDirection random number is 1,
+                else {
+                    // Mover right
+                    leftDirection = 1;
+                }
+            }
+
+            // Once direction has been decided, add movement to temporary state variable,
+            var newTopState = carnie.top + topDirection;
+            var newLeftState = carnie.left + leftDirection;
+            // Then set the states to those variables
+            this.setState({
+                positions: {
+                    ...this.state.positions, // Keep all other position states the same
+                    carnie: {
+                        top: newTopState,
+                        left: newLeftState
+                    }
+                }
+            });
+        }
+
+
     }
     
     // Carnie looking for Herbies Logic
