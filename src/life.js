@@ -214,7 +214,6 @@ export default class Life extends React.Component {
     }
 
     herbieDie() {
-        console.log("Herbie Died :(");
         this.setState({
             health: {
                 ...this.state.health,
@@ -230,10 +229,15 @@ export default class Life extends React.Component {
     herbieDecay() {
         var newDeathState = this.state.dying.herbie + 1;
         if(newDeathState !== 5){
+            var newNutritionState = this.state.nutrition.herbie - 100;
             this.setState({
                 dying: {
                     ...this.state.dying,
                     herbie: newDeathState
+                },
+                nutrition: {
+                    ...this.state.nutrition,
+                    herbie: newNutritionState
                 }
             });
         } else {
@@ -388,6 +392,10 @@ export default class Life extends React.Component {
                 health: {
                     ...this.state.health,
                     carnie: newCarnieHealth
+                },
+                nutrition: {
+                    ...this.state.nutrition,
+                    herbie: 0
                 }
             });
             this.herbieDie();
@@ -395,7 +403,6 @@ export default class Life extends React.Component {
     }
 
     carnieDie() {
-        console.log("Carnie Died :(");
         this.setState({
             positions: {
                 ...this.state.positions, // Keep all other position states the same
