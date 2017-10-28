@@ -62,7 +62,7 @@ export default class Life extends React.Component {
         var top = Math.floor(Math.random() * 100);
         var left = Math.floor(Math.random() * 100);
         var randomSize = Math.floor(Math.random() * 20) + 20;
-        var randomSight = Math.floor(Math.random() * 10) + 10;
+        var randomSight = Math.floor(Math.random() * 10) + 30;
         var randomNutrition = randomSize * 10;
         var randomHealth = Math.floor(Math.random() * 400) + 800;
 
@@ -115,9 +115,10 @@ export default class Life extends React.Component {
     // Creature movement logic
     move(creature) {
         if(creature === "herbie"){
-            var { herbies: lifeForm } = this.state;
+            var { herbies: lifeForm, leaves: food } = this.state;
+
         } else if(creature === "carnie"){
-            var { carnies: lifeForm } = this.state;
+            var { carnies: lifeForm, herbies: food } = this.state;
         }
         
         
@@ -143,42 +144,42 @@ export default class Life extends React.Component {
             }
             else {
                 var topDirection, leftDirection;
-        //         // If there is a leaf close by...
-        //         if(herbieTarget !== -1){
-        //             // If it's on the same y-axis, no need to changein that direction.
-        //             if(herbie.top === leaf[herbieTarget].top){
-        //                 topDirection = 0;
-        //             } 
-        //             // If it's below, move downwards.
-        //             else if((herbie.top - leaf[herbieTarget].top) < 0) {
-        //                 topDirection = 1;
-        //             } 
-        //             // If it's above, move upwards.
-        //             else if((herbie.top - leaf[herbieTarget].top) > 0) {
-        //                 topDirection = -1;
-        //             }
+                // If there is food close by...
+                if(lifeForm[i].target !== -1){
+                    // If it's on the same y-axis, no need to changein that direction.
+                    if(lifeForm[i].position.top === food[lifeForm[i].target].position.top){
+                        topDirection = 0;
+                    } 
+                    // If it's below, move downwards.
+                    else if((lifeForm[i].position.top - food[lifeForm[i].target].position.top) < 0) {
+                        topDirection = 1;
+                    } 
+                    // If it's above, move upwards.
+                    else if((lifeForm[i].position.top - food[lifeForm[i].target].position.top) > 0) {
+                        topDirection = -1;
+                    }
 
-        //             // If it's on the same x-axis, no need to change in that direction.
-        //             if(herbie.left === leaf[herbieTarget].left){
-        //                 leftDirection = 0;
-        //             }
-        //             // If it's to the right, move right.
-        //             else if((herbie.left - leaf[herbieTarget].left) < 0) {
-        //                 leftDirection = 1;
-        //             }
-        //             // If it's to the left, move left.
-        //             else if((herbie.left - leaf[herbieTarget].left) > 0) {
-        //                 leftDirection = -1;
-        //             }
-        //             // If with that last movement you landed on the leaf
-        //             if((herbie.left === leaf[herbieTarget].left) && (herbie.top === leaf[herbieTarget].top)){
-        //                 // Eat the leaf.
-        //                 this.herbieEatLeaf(herbieTarget);
-        //             }
-        //         } 
-        //         // If there is no leaf close by...
-        //         else {
-        //             this.searchForFood(creature, i);
+                    // If it's on the same x-axis, no need to change in that direction.
+                    if(lifeForm[i].position.left === food[lifeForm[i].target].position.left){
+                        leftDirection = 0;
+                    }
+                    // If it's to the right, move right.
+                    else if((lifeForm[i].position.left - food[lifeForm[i].target].position.left) < 0) {
+                        leftDirection = 1;
+                    }
+                    // If it's to the left, move left.
+                    else if((lifeForm[i].position.left - food[lifeForm[i].target].position.left) > 0) {
+                        leftDirection = -1;
+                    }
+                    // If with that last movement you landed on the leaf
+                    if((lifeForm[i].position.left === food[lifeForm[i].target].position.left) && (lifeForm[i].position.top === food[lifeForm[i].target].position.top)){
+                        // Eat the leaf.
+                        this.eat();
+                    }
+                } 
+                // If there is no leaf close by...
+                else {
+                    this.searchForFood(creature, i);
                     // Generate random numbers
                     topDirection = Math.floor(Math.random() * 2);
                     leftDirection = Math.floor(Math.random() * 2);
@@ -205,7 +206,7 @@ export default class Life extends React.Component {
                         // Mover right
                         leftDirection = 1;
                     }
-                // }
+                }
 
                 // Once direction has been decided, add movement to temporary state variable,
                 var newTopState = lifeForm[i].position.top + topDirection;
@@ -233,7 +234,7 @@ export default class Life extends React.Component {
         if(creature === "herbie"){
             var { herbies: lifeForm, leaves: food } = this.state;
         } else if(creature === "carnie"){
-            var { carnies: lifeForm, leaves: food } = this.state;
+            var { carnies: lifeForm, herbies: food } = this.state;
         }
 
         // Total sensing range
@@ -241,9 +242,9 @@ export default class Life extends React.Component {
         // Check through food array
         for(var i = 0; i < food.length; i++){
             // Compare top distance of lifeForm and food
-            var topDistanceToFood = lifeForm[index].position.top - food[index].position.top;
+            var topDistanceToFood = lifeForm[index].position.top - food[i].position.top;
             // Compare left distance of lifeForm and food
-            var leftDistanceToFood = lifeForm[index].position.left - food[index].position.left;
+            var leftDistanceToFood = lifeForm[index].position.left - food[i].position.left;
             // Figure out distance from food
             var distanceToFood = Math.sqrt((Math.pow(topDistanceToFood, 2)) + (Math.pow(leftDistanceToFood, 2)));
             // If the distance to the food is witin sensing range
@@ -264,28 +265,29 @@ export default class Life extends React.Component {
         }
     }
 
-    // // Herbie leave eating logic
-    // herbieEatLeaf(leafIndex) {
-    //     var newHealth = this.state.health.herbie + this.state.nutrition.leaf;
-    //     // Make copy of array of all leaves
-    //     var newLeafState = this.state.positions.leaf.slice();
-    //     // Remove the discovered leaf from this copy
-    //     newLeafState.splice(leafIndex, 1);
-    //     // Set the state to the filtered leaf array, minus the eaten leaf.
-    //     this.setState({
-    //         positions: {
-    //             ...this.state.positions, // Keep all other position states the same.
-    //             leaf: newLeafState
-    //         }, 
-    //         target: {
-    //             herbie: -1
-    //         },
-    //         health: {
-    //             ...this.state.health,
-    //             herbie: newHealth
-    //         }
-    //     });
-    // }
+    // Herbie leave eating logic
+    eat() {
+        console.log("Nom Nom Nom");
+        // var newHealth = this.state.health.herbie + this.state.nutrition.leaf;
+        // // Make copy of array of all leaves
+        // var newLeafState = this.state.positions.leaf.slice();
+        // // Remove the discovered leaf from this copy
+        // newLeafState.splice(leafIndex, 1);
+        // // Set the state to the filtered leaf array, minus the eaten leaf.
+        // this.setState({
+        //     positions: {
+        //         ...this.state.positions, // Keep all other position states the same.
+        //         leaf: newLeafState
+        //     }, 
+        //     target: {
+        //         herbie: -1
+        //     },
+        //     health: {
+        //         ...this.state.health,
+        //         herbie: newHealth
+        //     }
+        // });
+    }
 
     herbieDie(i) {
         console.log("Herbie" + i + " is dead!");
