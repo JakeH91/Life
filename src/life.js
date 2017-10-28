@@ -59,7 +59,6 @@ export default class Life extends React.Component {
     }
 
     generateHerbie(i) {
-        // Generate Position
         var top = Math.floor(Math.random() * 100);
         var left = Math.floor(Math.random() * 100);
         var randomSize = Math.floor(Math.random() * 20) + 20;
@@ -113,7 +112,7 @@ export default class Life extends React.Component {
         });
 
     }
-    // Herbies movement logic
+    // Creature movement logic
     move(creature) {
         if(creature === "herbie"){
             var { herbies: lifeForm } = this.state;

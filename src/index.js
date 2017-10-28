@@ -6,6 +6,6 @@ import Life from './life.js';
 var destination = document.getElementById("container");
 
 ReactDOM.render(
-    <Life numCarnies="10" numHerbies="10" numLeaves="10" />,
+    <Life numCarnies="5" numHerbies="5" numLeaves="100" />,
     destination
 );
