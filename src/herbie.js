@@ -1,4 +1,5 @@
 import React from 'react';
+import Animal from './animal.js';
 
 class Herbie extends React.Component {
     render() {
@@ -15,7 +16,9 @@ class Herbie extends React.Component {
             transform: "translate(-50%, -50%)"
         };
         return (
-            <img src={herbieImageString} style={herbieStyle} alt="Herbie" />
+            <Animal>
+                <img src={herbieImageString} style={herbieStyle} alt="Herbie" />
+            </Animal>
         );
     }
 };
