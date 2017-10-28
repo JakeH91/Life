@@ -12,9 +12,7 @@ export default class Animal extends React.Component {
     render(){
         return (
             <LifeForm top="" left="" nutritionalValue="" health="" >
-                <div>
-                    {this.props.children}
-                </div>
+                {this.props.children}
             </LifeForm>
         );
     }
