@@ -62,7 +62,7 @@ export default class Life extends React.Component {
         var top = Math.floor(Math.random() * 100);
         var left = Math.floor(Math.random() * 100);
         var randomSize = Math.floor(Math.random() * 20) + 20;
-        var randomSight = Math.floor(Math.random() * 10) + 30;
+        var randomSight = Math.floor(Math.random() * 10) + 10;
         var randomNutrition = randomSize * 10;
         var randomHealth = Math.floor(Math.random() * 400) + 800;
 
@@ -74,7 +74,7 @@ export default class Life extends React.Component {
             nutrition: randomNutrition,
             health: randomHealth,
             dying: 0,
-            target: -1
+            target: ""
         }
 
         var herbiesArray = this.state.herbies;
@@ -101,7 +101,7 @@ export default class Life extends React.Component {
             nutrition: randomNutrition,
             health: randomHealth,
             dying: 0,
-            target: -1
+            target: ""
         }
 
         var carniesArray = this.state.carnies;
@@ -145,37 +145,58 @@ export default class Life extends React.Component {
             else {
                 var topDirection, leftDirection;
                 // If there is food close by...
-                if(lifeForm[i].target !== -1){
-                    // If it's on the same y-axis, no need to changein that direction.
-                    if(lifeForm[i].position.top === food[lifeForm[i].target].position.top){
-                        topDirection = 0;
-                    } 
-                    // If it's below, move downwards.
-                    else if((lifeForm[i].position.top - food[lifeForm[i].target].position.top) < 0) {
-                        topDirection = 1;
-                    } 
-                    // If it's above, move upwards.
-                    else if((lifeForm[i].position.top - food[lifeForm[i].target].position.top) > 0) {
-                        topDirection = -1;
+                if(lifeForm[i].target){
+                    var theTarget = undefined;
+                    for(var a = 0; a < food.length; a++){
+                        if(food[a].key === lifeForm[i].target){
+                            theTarget = food[a];  
+                        }
                     }
+                    if(theTarget){
+                        // If it's on the same y-axis, no need to changein that direction.
+                        if(lifeForm[i].position.top === theTarget.position.top){
+                            topDirection = 0;
+                        } 
+                        // If it's below, move downwards.
+                        else if((lifeForm[i].position.top - theTarget.position.top) < 0) {
+                            topDirection = 1;
+                        } 
+                        // If it's above, move upwards.
+                        else if((lifeForm[i].position.top - theTarget.position.top) > 0) {
+                            topDirection = -1;
+                        }
 
-                    // If it's on the same x-axis, no need to change in that direction.
-                    if(lifeForm[i].position.left === food[lifeForm[i].target].position.left){
-                        leftDirection = 0;
+                        // If it's on the same x-axis, no need to change in that direction.
+                        if(lifeForm[i].position.left === theTarget.position.left){
+                            leftDirection = 0;
+                        }
+                        // If it's to the right, move right.
+                        else if((lifeForm[i].position.left - theTarget.position.left) < 0) {
+                            leftDirection = 1;
+                        }
+                        // If it's to the left, move left.
+                        else if((lifeForm[i].position.left - theTarget.position.left) > 0) {
+                            leftDirection = -1;
+                        }
+                        // If with that last movement you landed on the leaf
+                        if((lifeForm[i].position.left === theTarget.position.left) && (lifeForm[i].position.top === theTarget.position.top)){
+                            // Eat the leaf.
+                            this.eat(creature, i);
+                        }
+                    } else {
+                        lifeFormArray = lifeForm.slice();
+                        lifeFormArray[i].target = "";
+                        if(creature === "herbie"){
+                            this.setState({
+                                herbies: lifeFormArray
+                            });
+                        } else if(creature === "carnie"){
+                            this.setState({
+                                carnies: lifeFormArray
+                            });
+                        }
                     }
-                    // If it's to the right, move right.
-                    else if((lifeForm[i].position.left - food[lifeForm[i].target].position.left) < 0) {
-                        leftDirection = 1;
-                    }
-                    // If it's to the left, move left.
-                    else if((lifeForm[i].position.left - food[lifeForm[i].target].position.left) > 0) {
-                        leftDirection = -1;
-                    }
-                    // If with that last movement you landed on the leaf
-                    if((lifeForm[i].position.left === food[lifeForm[i].target].position.left) && (lifeForm[i].position.top === food[lifeForm[i].target].position.top)){
-                        // Eat the leaf.
-                        this.eat();
-                    }
+                    
                 } 
                 // If there is no leaf close by...
                 else {
@@ -250,7 +271,7 @@ export default class Life extends React.Component {
             // If the distance to the food is witin sensing range
             if(distanceToFood < sensingDistance){
                 var lifeFormArray = lifeForm.slice();
-                lifeFormArray[index].target = i;
+                lifeFormArray[index].target = food[i].key;
                 if(creature === "herbie"){
                     this.setState({
                         herbies: lifeFormArray
@@ -266,8 +287,41 @@ export default class Life extends React.Component {
     }
 
     // Herbie leave eating logic
-    eat() {
-        console.log("Nom Nom Nom");
+    eat(creature, index) {
+        if(creature === "herbie"){
+            var { herbies: eatingLifeForm, leaves: food } = this.state;
+        } else if(creature === "carnie"){
+            var { carnies: eatingLifeForm, herbies: food } = this.state;
+        }
+
+
+        var theTarget;
+        for(var b = 0; b < food.length; b++){
+            if(food[b].key === eatingLifeForm[index].target){
+                theTarget = b;
+                
+            }
+        }
+
+        var foodArray = food;
+        var lifeFormArray = eatingLifeForm;
+        lifeFormArray[index].target = "";
+        lifeFormArray[index].health += food[theTarget].nutrition;
+        foodArray.splice(theTarget, 1);
+        
+        
+        if(creature === "herbie"){
+            this.setState({
+                herbies: lifeFormArray,
+                leaves: foodArray
+            });
+        } else if(creature === "carnie"){
+            this.setState({
+                carnies: lifeFormArray,
+                herbies: foodArray
+            });
+        }
+ 
         // var newHealth = this.state.health.herbie + this.state.nutrition.leaf;
         // // Make copy of array of all leaves
         // var newLeafState = this.state.positions.leaf.slice();
@@ -515,10 +569,10 @@ export default class Life extends React.Component {
     componentDidMount() {
         this.startGame();
         this.startHerbie = setInterval(
-            () => this.move("herbie"), 1000
+            () => this.move("herbie"), 100
         );
         this.startCarnie = setInterval(
-            () => this.move("carnie"), 1000
+            () => this.move("carnie"), 150
         );
     }
 
