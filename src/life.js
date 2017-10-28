@@ -178,7 +178,7 @@ export default class Life extends React.Component {
         //         } 
         //         // If there is no leaf close by...
         //         else {
-        //             this.herbieCheckForLeaves();
+        //             this.searchForFood(creature, i);
                     // Generate random numbers
                     topDirection = Math.floor(Math.random() * 2);
                     leftDirection = Math.floor(Math.random() * 2);
@@ -227,34 +227,42 @@ export default class Life extends React.Component {
         }
     }
 
-    // Herbie looking for leaves logic
-    // herbieCheckForLeaves() {
-    //     // Create shortcuts for data
-    //     const { herbie, leaf } = this.state.positions;
-    //     const { herbie: herbieSense } = this.state.senses;
+    // Search for Food Logic
+    searchForFood(creature, index) {
+        // Create shortcuts for data
+        if(creature === "herbie"){
+            var { herbies: lifeForm, leaves: food } = this.state;
+        } else if(creature === "carnie"){
+            var { carnies: lifeForm, leaves: food } = this.state;
+        }
 
-    //     // Total sensing range
-    //     var sensingDistance = Math.sqrt((Math.pow(herbieSense.sight, 2)) + (Math.pow(herbieSense.sight, 2)));
-    //     // Check through all leaves
-    //     for(var i = 0; i < leaf.length; i++){
-    //         // Compare top distance of herbie and leaf
-    //         var topDistanceFromLeaf = herbie.top - leaf[i].top;
-    //         // Compare left distance of herbie and leaf
-    //         var leftDistanceFromLeaf = herbie.left - leaf[i].left;
-    //         // Figure out distance from leaf
-    //         var distanceToLeaf = Math.sqrt((Math.pow(topDistanceFromLeaf, 2)) + (Math.pow(leftDistanceFromLeaf, 2)));
-    //         // If the distance to the leaf is witin sensing range
-    //         if(distanceToLeaf < sensingDistance){
-    //             // Set target to that leaf
-    //             this.setState({
-    //                 target: {
-    //                     herbie: i
-    //                 }
-    //             });
-    //             return;
-    //         }
-    //     }
-    // }
+        // Total sensing range
+        var sensingDistance = Math.sqrt((Math.pow(lifeForm[index].sense.sight, 2)) + (Math.pow(lifeForm[index].sense.sight, 2)));
+        // Check through food array
+        for(var i = 0; i < food.length; i++){
+            // Compare top distance of lifeForm and food
+            var topDistanceToFood = lifeForm[index].position.top - food[index].position.top;
+            // Compare left distance of lifeForm and food
+            var leftDistanceToFood = lifeForm[index].position.left - food[index].position.left;
+            // Figure out distance from food
+            var distanceToFood = Math.sqrt((Math.pow(topDistanceToFood, 2)) + (Math.pow(leftDistanceToFood, 2)));
+            // If the distance to the food is witin sensing range
+            if(distanceToFood < sensingDistance){
+                var lifeFormArray = lifeForm.slice();
+                lifeFormArray[index].target = i;
+                if(creature === "herbie"){
+                    this.setState({
+                        herbies: lifeFormArray
+                    });
+                } else if(creature === "carnie"){
+                    this.setState({
+                        carnies: lifeFormArray
+                    });
+                }
+                return;
+            }
+        }
+    }
 
     // // Herbie leave eating logic
     // herbieEatLeaf(leafIndex) {
