@@ -13,15 +13,18 @@ export default class Life extends React.Component {
             // Initialize lifeform arrays
             herbies: [],
             carnies: [],
-            leaves: [],
-            intervals: []
+            leaves: []
         }
 
         this.handleClick = this.handleClick.bind(this);
     }
 
+    // Initialize game
     startGame() {
+        // Start the flow of time
         this.timeInterval = setInterval(() => this.updateTime(), 10000);
+        
+        // Generate life forms according to props
         for(var i = 0; i < this.props.numLeaves; i++) {
             this.generateLeaf(i);
         }
@@ -33,6 +36,7 @@ export default class Life extends React.Component {
         }
     }
 
+    // Add 1 to timeElapsed
     updateTime() {
         const { timeElapsed } = this.state;
         this.setState({
@@ -41,9 +45,11 @@ export default class Life extends React.Component {
     }
 
     generateLeaf(i) {
+        // Get random coordinates
         var top = Math.floor(Math.random() * 100);
         var left = Math.floor(Math.random() * 100);
         
+        // Create new leaf object with random coordinates
         var newLeaf = { 
             key: "leaf" + i,
             position: {
@@ -53,15 +59,18 @@ export default class Life extends React.Component {
             nutrition: 100
         };
 
+        // Copy the leaves array and push the new leaf to the end of that array
         var leavesArray = this.state.leaves;
         leavesArray.push(newLeaf);
 
+        // Set the state to the altered, copied array
         this.setState({
             leaves: leavesArray
         });
     }
 
     generateHerbie(i) {
+        // Randomly generate stats
         var top = Math.floor(Math.random() * 100);
         var left = Math.floor(Math.random() * 100);
         var randomSize = Math.floor(Math.random() * 20) + 20;
@@ -70,6 +79,7 @@ export default class Life extends React.Component {
         var randomNutrition = randomSize * 10;
         var randomHealth = Math.floor(Math.random() * 400) + 10;
 
+        // Create new herbie object with random stats
         var newHerbie = {
             key: "herbie" + i,
             position: { top: top, left: left },
@@ -83,15 +93,18 @@ export default class Life extends React.Component {
             image: 0
         }
 
+        // Copy the herbies array and push the new herbie to the end of that array
         var herbiesArray = this.state.herbies;
         herbiesArray.push(newHerbie);
 
+        // Set the state to the altered, copied array
         this.setState({
             herbies: herbiesArray
         });
     }
 
     generateCarnie(i) {
+        // Randomly generate stats
         var top = Math.floor(Math.random() * 100);
         var left = Math.floor(Math.random() * 100);
         var randomSize = Math.floor(Math.random() * 20) + 20;
@@ -100,6 +113,7 @@ export default class Life extends React.Component {
         var randomNutrition = randomSize * 10;
         var randomHealth = Math.floor(Math.random() * 400) + 10;
 
+        // Create new carnie object with random stats
         var newCarnie = {
             key: "carnie" + i,
             position: { top: top, left: left },
@@ -113,16 +127,20 @@ export default class Life extends React.Component {
             image: 0
         }
 
+        // Copy the carnies array and push the new carnie to the end of that array
         var carniesArray = this.state.carnies;
         carniesArray.push(newCarnie);
 
+        // Set the state to the altered, copied array
         this.setState({
             carnies: carniesArray
         });
 
     }
+    
     // Creature movement logic
     move(creature) {
+        // Set the lifeForm and food variables depending on the creature
         if(creature === "herbie"){
             var { herbies: lifeForm, leaves: food } = this.state;
 
@@ -130,14 +148,16 @@ export default class Life extends React.Component {
             var { carnies: lifeForm, herbies: food } = this.state;
         }
         
-        
-        // Provide shortcuts for various bits of data
+        // Cycle through all instances of that creature
         for(var i = 0; i < lifeForm.length; i++){
+            // If it isn't dead...
             if(!lifeForm[i].dead){
                 // Minus 7 health point
                 var newHealth = lifeForm[i].health - 7;
                 var lifeFormArray = lifeForm.slice();
                 lifeFormArray[i].health = newHealth;
+                
+                // Update the health of that creature
                 if(creature === "herbie"){
                     this.setState({
                         herbies: lifeFormArray
@@ -148,54 +168,67 @@ export default class Life extends React.Component {
                     });
                 }
                 
+                // If health drops below 0, the creature dies
                 if(lifeForm[i].health <= 0){
-                    console.log(creature + i + " is going to die...");
                     this.die(creature, i);
                 }
+                // If health is still above 0...
                 else {
                     var topDirection, leftDirection;
-                    // If there is food close by...
+                    // If the creature has a target locked...
                     if(lifeForm[i].target){
                         var theTarget = undefined;
+                        // Set theTarget equal to the object of whatever it is targeting
                         for(var a = 0; a < food.length; a++){
                             if(food[a].key === lifeForm[i].target){
                                 theTarget = food[a];  
                             }
                         }
+                        // If that target still exists (and hasn't been eaten or decayed to nothing)
                         if(theTarget){
+                            // Set difference between top positions of creature and food to topDifference
+                            var topDifference = lifeForm[i].position.top - theTarget.position.top;
+                            // Set difference between left positions of creature and food to leftDifference
+                            var leftDifference = lifeForm[i].position.left - theTarget.position.left;
+
+
                             // If it's on the same y-axis, no need to changein that direction.
-                            if(lifeForm[i].position.top === theTarget.position.top){
-                                topDirection = 0;
+                            if(topDifference === 0 || Math.abs(topDifference) < lifeForm[i].speed){
+                                topDirection = topDifference;
                             } 
                             // If it's below, move downwards.
-                            else if((lifeForm[i].position.top - theTarget.position.top) < 0) {
+                            else if(topDifference < 0) {
                                 topDirection = lifeForm[i].speed;
                             } 
                             // If it's above, move upwards.
-                            else if((lifeForm[i].position.top - theTarget.position.top) > 0) {
+                            else if(topDifference > 0) {
                                 topDirection = -(lifeForm[i].speed);
                             }
 
                             // If it's on the same x-axis, no need to change in that direction.
-                            if(lifeForm[i].position.left === theTarget.position.left){
-                                leftDirection = 0;
+                            if(leftDifference === 0 || Math.abs(leftDifference) < lifeForm[i].speed){
+                                leftDirection = leftDifference;
                             }
                             // If it's to the right, move right.
-                            else if((lifeForm[i].position.left - theTarget.position.left) < 0) {
+                            else if(leftDifference < 0) {
                                 leftDirection = lifeForm[i].speed;
                             }
                             // If it's to the left, move left.
-                            else if((lifeForm[i].position.left - theTarget.position.left) > 0) {
+                            else if(leftDifference > 0) {
                                 leftDirection = -(lifeForm[i].speed);
                             }
                             // If with that last movement you landed on the leaf
-                            if((lifeForm[i].position.left === theTarget.position.left) && (lifeForm[i].position.top === theTarget.position.top)){
+                            if((topDifference === 0) && (leftDifference === 0)){
                                 // Eat the leaf.
                                 this.eat(creature, i);
                             }
-                        } else {
+                        } 
+                        // If the target no longer exists...
+                        else {
+                            // Remove the target from the creature's object
                             lifeFormArray = lifeForm.slice();
                             lifeFormArray[i].target = "";
+                            // And update the state accordingly.
                             if(creature === "herbie"){
                                 this.setState({
                                     herbies: lifeFormArray
@@ -208,26 +241,25 @@ export default class Life extends React.Component {
                         }
                         
                     } 
-                    // If there is no leaf close by...
+                    // If the creature has no target...
                     else {
-                        this.searchForFood(creature, i);
                         // Generate random numbers
                         topDirection = Math.floor(Math.random() * 2);
                         leftDirection = Math.floor(Math.random() * 2);
-                        // If topDirection random number is 0, and Herbie is not at the top of the board
-                        // (Or herbie is at the bottom or the board)
+                        // If topDirection random number is 0, and the creature is not at the top of the board
+                        // (Or the creature is at the bottom or the board)
                         if((topDirection < 1 && lifeForm[i].position.top !== 0) || lifeForm[i].position.top === 100) {
                             // Move upwards.
                             topDirection = -(lifeForm[i].speed);
                         } 
-                        // Otherwise, ff topDirection random number is 1,
+                        // Otherwise, if topDirection random number is 1,
                         else {
                             // Move downwards.
                             topDirection = lifeForm[i].speed;
                         }
 
-                        // If leftDirection random number is 0, and Herbie is not at the absolute left of the board
-                        // (Or herbie is at the absolute right or the board)
+                        // If leftDirection random number is 0, and the creature is not at the absolute left of the board
+                        // (Or the creature is at the absolute right or the board)
                         if((leftDirection < 1 && lifeForm[i].position.left !== 0) || lifeForm[i].position.left === 100) {
                             // Move left
                             leftDirection = -(lifeForm[i].speed);
@@ -237,6 +269,8 @@ export default class Life extends React.Component {
                             // Mover right
                             leftDirection = lifeForm[i].speed;
                         }
+                        // Look for a target
+                        this.searchForFood(creature, i);
                     }
 
                     // Once direction has been decided, add movement to temporary state variable,
@@ -256,9 +290,14 @@ export default class Life extends React.Component {
                     }
     
                 }
-            } else {
+            } 
+            // If the creature is dead...
+            else {
+                // Decay a bit more.
                 var death = this.decay(creature, i);
+                // If the creature is fully decayed, the creature is removed,
                 if(death){
+                    // And we exit the loop.
                     return;
                 }
             }
@@ -269,7 +308,7 @@ export default class Life extends React.Component {
 
     // Search for Food Logic
     searchForFood(creature, index) {
-        // Create shortcuts for data
+        // Set the lifeForm and food variables depending on the creature
         if(creature === "herbie"){
             var { herbies: lifeForm, leaves: food } = this.state;
         } else if(creature === "carnie"){
@@ -286,10 +325,12 @@ export default class Life extends React.Component {
             var leftDistanceToFood = lifeForm[index].position.left - food[i].position.left;
             // Figure out distance from food
             var distanceToFood = Math.sqrt((Math.pow(topDistanceToFood, 2)) + (Math.pow(leftDistanceToFood, 2)));
-            // If the distance to the food is witin sensing range
+            // If the distance to the food is within sensing range...
             if(distanceToFood < sensingDistance){
+                // Add the food's key to the creatures target...
                 var lifeFormArray = lifeForm.slice();
                 lifeFormArray[index].target = food[i].key;
+                // And update the state accordingly.
                 if(creature === "herbie"){
                     this.setState({
                         herbies: lifeFormArray
@@ -299,14 +340,16 @@ export default class Life extends React.Component {
                         carnies: lifeFormArray
                     });
                 }
+                // Exit the loop
                 return;
             }
         }
     }
 
-    // Herbie leave eating logic
+    // Eating logic
     eat(creature, index) {
         var theTargetSpecies;
+        // Set the lifeForm, food and target species variables depending on the creature
         if(creature === "herbie"){
             var { herbies: eatingLifeForm, leaves: food } = this.state;
             theTargetSpecies = "leaf";
@@ -315,19 +358,23 @@ export default class Life extends React.Component {
             theTargetSpecies = "herbie";
         }
 
-
         var theTargetIndex;
         var lifeFormArray = eatingLifeForm;
-        var foodArray = food;
         
+        // Loop through food array
         for(var b = 0; b < food.length; b++){
+            // If the food item at current index has a key that is equal to the creatures target
             if(food[b].key === eatingLifeForm[index].target){
+                // Set theTargetIndex to current index
                 theTargetIndex = b;
+                // Add the available nutrition to the creature
                 lifeFormArray[index].health += food[theTargetIndex].nutrition;
+                // And remove the target from it's array
                 this.remove(theTargetSpecies, theTargetIndex);
             } 
         }
 
+        // Reset the creature's target
         lifeFormArray[index].target = "";
         if(creature === "herbie"){
             this.setState({
@@ -341,15 +388,16 @@ export default class Life extends React.Component {
     }
 
     die(creature, i) {
+        // Set the lifeForm variable depending on the creature
         if(creature === "herbie"){
             var { herbies: lifeForm } = this.state;
         } else if(creature === "carnie"){
             var { carnies: lifeForm } = this.state;
         }
 
+        // Update the dead variable of the creature to true
         var lifeFormArray = lifeForm.slice();
         lifeFormArray[i].dead = true;
-        
         if(creature === "herbie"){
             this.setState({
                 herbies: lifeFormArray
@@ -362,22 +410,28 @@ export default class Life extends React.Component {
     }
 
     decay(creature, i) {
+        // Set the lifeForm variable depending on the creature
         if(creature === "herbie"){
             var { herbies: lifeForm } = this.state;
         } else if(creature === "carnie"){
             var { carnies: lifeForm } = this.state;
         }
 
+        // Change the image (every other run through) and take away some nutrition
         var lifeFormArray = lifeForm.slice();
         lifeFormArray[i].image += 0.5;
         lifeFormArray[i].nutrition -= 50;
-
+        
+        // If the creature has cycled through all decay images
         if(lifeFormArray[i].image > 4.5){
+            // Remove the creature from it's array and leave the function
             this.remove(creature, i);
             return true;
         }
 
+        // If the creature has not finished the decaying process...
         else {
+            // Applied the updated values of image and nutrition
             if(creature === "herbie"){
                 this.setState({
                     herbies: lifeFormArray
@@ -392,6 +446,7 @@ export default class Life extends React.Component {
     }
 
     remove(creature, i) {
+        // Set the lifeForm variable depending on the creature
         if(creature === "herbie"){
             var { herbies: lifeForm } = this.state;
         } else if(creature === "carnie"){
@@ -400,13 +455,16 @@ export default class Life extends React.Component {
             var { leaves: lifeForm } = this.state;
         }
 
+        // Remove that creature from a copy of the array
         var lifeFormArray = lifeForm.slice();
         lifeFormArray.splice(i, 1);
 
+        // Update the state accordingly
         if(creature === "herbie"){
             this.setState({
                 herbies: lifeFormArray
             });
+            // If the last herbie has just been removed, stop the process for moving herbies
             if(this.state.herbies.length < 1){
                 clearInterval(this.startHerbie);
             }
@@ -414,6 +472,7 @@ export default class Life extends React.Component {
             this.setState({
                 carnies: lifeFormArray
             });
+            // If the last carnie has just been removed, stop the process for moving carnies
             if(this.state.carnies.length < 1){
                 clearInterval(this.startCarnie);
             }
@@ -424,7 +483,9 @@ export default class Life extends React.Component {
         }
     }
 
+    // When start button is pressed
     handleClick(){
+        // Start the game, get the creatures moving
         this.startGame();
         this.startHerbie = setInterval(
             () => this.move("herbie"), 100
@@ -432,6 +493,7 @@ export default class Life extends React.Component {
         this.startCarnie = setInterval(
             () => this.move("carnie"), 100
         );
+        // And hide the button
         var button = document.getElementById("startButton");
         button.style.display = "none"
     }
@@ -453,16 +515,6 @@ export default class Life extends React.Component {
             
         );
     } 
-    
-    // componentDidMount() {
-    //     this.startGame();
-    //     this.startHerbie = setInterval(
-    //         () => this.move("herbie"), 100
-    //     );
-    //     this.startCarnie = setInterval(
-    //         () => this.move("carnie"), 100
-    //     );
-    // }
 
     componentWillUnmount() {
         clearInterval(this.startHerbie);

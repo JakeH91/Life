@@ -11,7 +11,7 @@ Next Change to Make
         <!-- (I002): While lifeform decays, all of same species (under index of the decaying) freeze and resume movement once the decaying is removed. (29/10/17) -->
     <!-- Generate different speeds amoungst creatures upon generation. (29/10/17) -->
         ISSUES:
-            (I003): When a creature aproaches it's prey, if the distance is not divisible by the creature's speed, it will never reach it.
+            <!-- (I003): When a creature aproaches it's prey, if the distance is not divisible by the creature's speed, it will never reach it. (29/10/17) -->
     Regenerate leaves over time.
     Background colour change according to time passed (to simulate day and night).
     Adjust sight capability to time of day.
