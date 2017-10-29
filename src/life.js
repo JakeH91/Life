@@ -40,39 +40,73 @@ export default class Life extends React.Component {
     updateTime() {
         const { timeElapsed } = this.state;
         this.setState({
-            timeElapsed: timeElapsed + 0.5
+            timeElapsed: timeElapsed + 1
         });
-        this.changeLighting();
+        var time = this.state.timeElapsed % 24;
+        this.changeLighting(time);
+        this.changeVision(time);
     }
 
-    changeLighting() {
-        var time = (Math.floor(this.state.timeElapsed)) % 24;
+    changeLighting(time) {
         var backgroundStyle, r, g, b;
+
         var addition = Math.floor(255/12);
-        var gAddition = Math.floor(230/12);
-        var bAddition = Math.floor(255/12);
+        // Maybe change background color instead of just black and white
+        // var gAddition = Math.floor(230/12);
+        // var bAddition = Math.floor(255/12);
         if(time > 0 && time < 13){ 
-            r = 0;
-            g = 0;
-            b = 0;
-            r += (addition * time);
-            g += (addition * time);
-            b += (addition * time);
-        } else if(time > 12){
             r = 255;
             g = 255;
             b = 255;
-            r -= (addition * (time - 12));
-            g -= (addition * (time - 12));
-            b -= (addition * (time - 12));
-        } else if(time === 0){
+            r -= (addition * time);
+            g -= (addition * time);
+            b -= (addition * time);
+            
+        } else if(time > 12){
             r = 0;
             g = 0;
             b = 0;
+            r += (addition * (time - 12));
+            g += (addition * (time - 12));
+            b += (addition * (time - 12));
+        } else if(time === 0){
+            r = 255;
+            g = 255;
+            b = 255;
         }
 
         backgroundStyle = "rgb(" + r + ", " + g + ", " + b + ")";
         document.body.style.backgroundColor = backgroundStyle;
+    }
+
+    changeVision(time) {
+        var { herbies, carnies } = this.state
+        for(var i = 0; i < herbies.length; i++){
+            var tempHerbies = herbies.slice()
+            var herbieSight = tempHerbies[i].sense.sight;
+            if(time > 0 && time < 13){
+                herbieSight -= tempHerbies[i].sense.sightLoss;
+            } else if (time > 12){
+                herbieSight += tempHerbies[i].sense.sightLoss;
+            }
+            tempHerbies[i].sense.sight = herbieSight;
+            this.setState({
+                herbies: tempHerbies
+            });
+        }
+        for(var j = 0; j < carnies.length; j++){
+            var tempCarnies = carnies.slice()
+            var carnieSight = tempCarnies[j].sense.sight;
+            if(time > 0 && time < 13){
+                carnieSight -= tempCarnies[j].sense.sightLoss;
+            } else if (time > 12){
+                carnieSight += tempCarnies[j].sense.sightLoss;
+            }
+            tempCarnies[j].sense.sight = carnieSight;
+            this.setState({
+                carnies: tempCarnies
+            });
+        }
     }
 
     generateLeaf(i) {
@@ -106,6 +140,7 @@ export default class Life extends React.Component {
         var left = Math.floor(Math.random() * 100);
         var randomSize = Math.floor(Math.random() * 20) + 20;
         var randomSight = Math.floor(Math.random() * 10) + 10;
+        var sightLoss = (randomSight*7.5)/100;
         var randomSpeed = Math.floor(Math.random() * 2)+ 1;
         var randomNutrition = randomSize * 10;
         var randomHealth = Math.floor(Math.random() * 400) + 10;
@@ -115,7 +150,10 @@ export default class Life extends React.Component {
             key: "herbie" + i,
             position: { top: top, left: left },
             size: randomSize,
-            sense: { sight: randomSight },
+            sense: { 
+                sight: randomSight,
+                sightLoss: sightLoss
+            },
             speed: randomSpeed,
             nutrition: randomNutrition,
             health: randomHealth,
@@ -140,6 +178,7 @@ export default class Life extends React.Component {
         var left = Math.floor(Math.random() * 100);
         var randomSize = Math.floor(Math.random() * 20) + 20;
         var randomSight = Math.floor(Math.random() * 10) + 10;
+        var sightLoss = (randomSight*7.5)/100;
         var randomSpeed = Math.random() + 0.5;
         var randomNutrition = randomSize * 10;
         var randomHealth = Math.floor(Math.random() * 400) + 10;
@@ -149,7 +188,10 @@ export default class Life extends React.Component {
             key: "carnie" + i,
             position: { top: top, left: left },
             size: randomSize,
-            sense: { sight: randomSight },
+            sense: { 
+                sight: randomSight,
+                sightLoss: sightLoss
+            },
             speed: randomSpeed,
             nutrition: randomNutrition,
             health: randomHealth,
@@ -511,6 +553,10 @@ export default class Life extends React.Component {
             this.setState({
                 leaves: lifeFormArray
             });
+        }
+
+        if(this.state.herbies.length < 1 && this.state.carnies.length < 1){
+            clearInterval(this.timeInterval);
         }
     }
 

@@ -13,11 +13,13 @@ Next Change to Make
         ISSUES:
             <!-- (I0003): When a creature aproaches it's prey, if the distance is not divisible by the creature's speed, it will never reach it. (29/10/17) -->
     (T0005) Regenerate leaves over time.
-    <!-- (T0006) Background colour change according to time passed (to simulate day and night). -->
+    <!-- (T0006) Background colour change according to time passed (to simulate day and night). (29/10/17) -->
         ISSUES:
             (I0004): Color change clunky. Change to fade.
             (I0005): Life forms look as bright at any time of day. Overlay the color change with high opacity.
-    (T0007) Adjust sight capability to time of day.
+    <!-- (T0007) Adjust sight capability to time of day. (29/10/17) -->
+        ISSUES:
+            (I0006): May need to increase sight at night a bit.
 
 29/10/17:
     (T0008) Style start life button to be displayed in the middle of the screen, large, before game begins
@@ -29,3 +31,4 @@ Next Change to Make
         (T0010d) Sight,
         (T0010e) Speed
     (T0011) Fade seamlessly between decay images (instead of clunky changes)
+    (T0012) If sight is below a certain level, creatures should preserve energy (sleep)
