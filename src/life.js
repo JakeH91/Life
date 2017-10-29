@@ -16,6 +16,8 @@ export default class Life extends React.Component {
             leaves: [],
             intervals: []
         }
+
+        this.handleClick = this.handleClick.bind(this);
     }
 
     startGame() {
@@ -418,9 +420,22 @@ export default class Life extends React.Component {
         }
     }
 
+    handleClick(){
+        this.startGame();
+        this.startHerbie = setInterval(
+            () => this.move("herbie"), 100
+        );
+        this.startCarnie = setInterval(
+            () => this.move("carnie"), 100
+        );
+        var button = document.getElementById("startButton");
+        button.style.display = "none"
+    }
+
     render() {
         return(
             <div>
+                <button id="startButton" onClick={this.handleClick}>CREATE LIFE!</button>
                 {this.state.herbies.map(herbie =>
                     <Herbie size={herbie.size} top={herbie.position.top} left={herbie.position.left} key={herbie.key} image={herbie.image} />
                 )};
@@ -435,15 +450,15 @@ export default class Life extends React.Component {
         );
     } 
     
-    componentDidMount() {
-        this.startGame();
-        this.startHerbie = setInterval(
-            () => this.move("herbie"), 100
-        );
-        this.startCarnie = setInterval(
-            () => this.move("carnie"), 100
-        );
-    }
+    // componentDidMount() {
+    //     this.startGame();
+    //     this.startHerbie = setInterval(
+    //         () => this.move("herbie"), 100
+    //     );
+    //     this.startCarnie = setInterval(
+    //         () => this.move("carnie"), 100
+    //     );
+    // }
 
     componentWillUnmount() {
         clearInterval(this.startHerbie);
