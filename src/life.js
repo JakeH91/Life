@@ -251,11 +251,15 @@ export default class Life extends React.Component {
     
                 }
             } else {
-                this.decay(creature, i);
-                return;
+                var death = this.decay(creature, i);
+                if(death){
+                    return;
+                }
             }
         }
     }
+
+
 
     // Search for Food Logic
     searchForFood(creature, index) {
@@ -307,19 +311,18 @@ export default class Life extends React.Component {
 
 
         var theTargetIndex;
+        var lifeFormArray = eatingLifeForm;
+        var foodArray = food;
+        
         for(var b = 0; b < food.length; b++){
             if(food[b].key === eatingLifeForm[index].target){
                 theTargetIndex = b;
-            }
+                lifeFormArray[index].health += food[theTargetIndex].nutrition;
+                this.remove(theTargetSpecies, theTargetIndex);
+            } 
         }
 
-        var foodArray = food;
-        var lifeFormArray = eatingLifeForm;
         lifeFormArray[index].target = "";
-        lifeFormArray[index].health += food[theTargetIndex].nutrition;
-        this.remove(theTargetSpecies, theTargetIndex);
-        
-        
         if(creature === "herbie"){
             this.setState({
                 herbies: lifeFormArray,
@@ -365,6 +368,7 @@ export default class Life extends React.Component {
 
         if(lifeFormArray[i].image > 4.5){
             this.remove(creature, i);
+            return true;
         }
 
         else {
