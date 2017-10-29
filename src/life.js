@@ -66,6 +66,7 @@ export default class Life extends React.Component {
         var left = Math.floor(Math.random() * 100);
         var randomSize = Math.floor(Math.random() * 20) + 20;
         var randomSight = Math.floor(Math.random() * 10) + 10;
+        var randomSpeed = Math.floor(Math.random() * 2)+ 1;
         var randomNutrition = randomSize * 10;
         var randomHealth = Math.floor(Math.random() * 400) + 10;
 
@@ -74,6 +75,7 @@ export default class Life extends React.Component {
             position: { top: top, left: left },
             size: randomSize,
             sense: { sight: randomSight },
+            speed: randomSpeed,
             nutrition: randomNutrition,
             health: randomHealth,
             dead: false,
@@ -94,6 +96,7 @@ export default class Life extends React.Component {
         var left = Math.floor(Math.random() * 100);
         var randomSize = Math.floor(Math.random() * 20) + 20;
         var randomSight = Math.floor(Math.random() * 10) + 10;
+        var randomSpeed = Math.random() + 0.5;
         var randomNutrition = randomSize * 10;
         var randomHealth = Math.floor(Math.random() * 400) + 10;
 
@@ -102,6 +105,7 @@ export default class Life extends React.Component {
             position: { top: top, left: left },
             size: randomSize,
             sense: { sight: randomSight },
+            speed: randomSpeed,
             nutrition: randomNutrition,
             health: randomHealth,
             dying: false,
@@ -165,11 +169,11 @@ export default class Life extends React.Component {
                             } 
                             // If it's below, move downwards.
                             else if((lifeForm[i].position.top - theTarget.position.top) < 0) {
-                                topDirection = 1;
+                                topDirection = lifeForm[i].speed;
                             } 
                             // If it's above, move upwards.
                             else if((lifeForm[i].position.top - theTarget.position.top) > 0) {
-                                topDirection = -1;
+                                topDirection = -(lifeForm[i].speed);
                             }
 
                             // If it's on the same x-axis, no need to change in that direction.
@@ -178,11 +182,11 @@ export default class Life extends React.Component {
                             }
                             // If it's to the right, move right.
                             else if((lifeForm[i].position.left - theTarget.position.left) < 0) {
-                                leftDirection = 1;
+                                leftDirection = lifeForm[i].speed;
                             }
                             // If it's to the left, move left.
                             else if((lifeForm[i].position.left - theTarget.position.left) > 0) {
-                                leftDirection = -1;
+                                leftDirection = -(lifeForm[i].speed);
                             }
                             // If with that last movement you landed on the leaf
                             if((lifeForm[i].position.left === theTarget.position.left) && (lifeForm[i].position.top === theTarget.position.top)){
@@ -214,24 +218,24 @@ export default class Life extends React.Component {
                         // (Or herbie is at the bottom or the board)
                         if((topDirection < 1 && lifeForm[i].position.top !== 0) || lifeForm[i].position.top === 100) {
                             // Move upwards.
-                            topDirection = -1;
+                            topDirection = -(lifeForm[i].speed);
                         } 
                         // Otherwise, ff topDirection random number is 1,
                         else {
                             // Move downwards.
-                            topDirection = 1;
+                            topDirection = lifeForm[i].speed;
                         }
 
                         // If leftDirection random number is 0, and Herbie is not at the absolute left of the board
                         // (Or herbie is at the absolute right or the board)
                         if((leftDirection < 1 && lifeForm[i].position.left !== 0) || lifeForm[i].position.left === 100) {
                             // Move left
-                            leftDirection = -1;
+                            leftDirection = -(lifeForm[i].speed);
                         } 
                         // Otherwise, if leftDirection random number is 1,
                         else {
                             // Mover right
-                            leftDirection = 1;
+                            leftDirection = lifeForm[i].speed;
                         }
                     }
 
