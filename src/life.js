@@ -349,10 +349,6 @@ export default class Life extends React.Component {
                 carnies: lifeFormArray
             });
         }
-
-        // this.startHerbieDecay = setInterval(
-        //     () => this.herbieDecay(), 2000
-        // );
     }
 
     decay(creature, i) {
@@ -416,22 +412,6 @@ export default class Life extends React.Component {
             });
         }
     }
-    // carnieDie() {
-    //     this.setState({
-    //         positions: {
-    //             ...this.state.positions, // Keep all other position states the same
-    //             carnie: {
-    //                 top: -100,
-    //                 left: -100
-    //             }
-    //         },
-    //         health: {
-    //             ...this.state.health,
-    //             carnie: 0
-    //         }
-    //     });
-    //     clearInterval(this.startCarnie);
-    // }
 
     render() {
         return(
