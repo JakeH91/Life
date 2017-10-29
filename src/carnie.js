@@ -1,8 +1,12 @@
 import React from 'react';
-import carnie from './carnie.png';
 
 class Carnie extends React.Component {
     render() {
+        var carnieImageString = require("./carnie.png");
+        var changeImage = Math.floor(this.props.image);
+        if(changeImage !== 0 && changeImage !== 5){
+            carnieImageString = require("./carnieDying" + changeImage + ".png");
+        }
         var carnieStyle = {
             height: this.props.size,
             width: this.props.size,
@@ -12,7 +16,7 @@ class Carnie extends React.Component {
             transform: "translate(-50%, -50%)"
         };
         return (
-            <img src={carnie} style={carnieStyle} alt="Carnie" />
+            <img src={carnieImageString} style={carnieStyle} alt="Carnie" />
         )
     }
 };

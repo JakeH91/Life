@@ -4,8 +4,9 @@ import Animal from './animal.js';
 class Herbie extends React.Component {
     render() {
         var herbieImageString = require("./herbie.png");
-        if(this.props.dying !== 0 && this.props.dying !== 5){
-            herbieImageString = require("./herbieDying" + this.props.dying + ".png");
+        var changeImage = Math.floor(this.props.image);
+        if(changeImage !== 0 && changeImage !== 5){
+            herbieImageString = require("./herbieDying" + changeImage + ".png");
         }
         var herbieStyle = {
             height: this.props.size,
