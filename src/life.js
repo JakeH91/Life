@@ -22,7 +22,7 @@ export default class Life extends React.Component {
     // Initialize game
     startGame() {
         // Start the flow of time
-        this.timeInterval = setInterval(() => this.updateTime(), 10000);
+        this.timeInterval = setInterval(() => this.updateTime(), 1000);
         
         // Generate life forms according to props
         for(var i = 0; i < this.props.numLeaves; i++) {
@@ -40,8 +40,39 @@ export default class Life extends React.Component {
     updateTime() {
         const { timeElapsed } = this.state;
         this.setState({
-            timeElapsed: timeElapsed + 1
+            timeElapsed: timeElapsed + 0.5
         });
+        this.changeLighting();
+    }
+
+    changeLighting() {
+        var time = (Math.floor(this.state.timeElapsed)) % 24;
+        var backgroundStyle, r, g, b;
+        var addition = Math.floor(255/12);
+        var gAddition = Math.floor(230/12);
+        var bAddition = Math.floor(255/12);
+        if(time > 0 && time < 13){ 
+            r = 0;
+            g = 0;
+            b = 0;
+            r += (addition * time);
+            g += (addition * time);
+            b += (addition * time);
+        } else if(time > 12){
+            r = 255;
+            g = 255;
+            b = 255;
+            r -= (addition * (time - 12));
+            g -= (addition * (time - 12));
+            b -= (addition * (time - 12));
+        } else if(time === 0){
+            r = 0;
+            g = 0;
+            b = 0;
+        }
+
+        backgroundStyle = "rgb(" + r + ", " + g + ", " + b + ")";
+        document.body.style.backgroundColor = backgroundStyle;
     }
 
     generateLeaf(i) {
@@ -504,10 +535,10 @@ export default class Life extends React.Component {
                 <button id="startButton" onClick={this.handleClick}>CREATE LIFE!</button>
                 {this.state.herbies.map(herbie =>
                     <Herbie size={herbie.size} top={herbie.position.top} left={herbie.position.left} key={herbie.key} image={herbie.image} />
-                )};
+                )}
                 {this.state.carnies.map(carnie =>
                     <Carnie size={carnie.size} top={carnie.position.top} left={carnie.position.left} key={carnie.key} image={carnie.image} />
-                )};
+                )}
                 {this.state.leaves.map(leaf =>
                     <Leaf top={leaf.position.top} left={leaf.position.left} key={leaf.key} />
                 )}
