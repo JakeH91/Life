@@ -251,7 +251,8 @@ export default class Life extends React.Component {
     
                 }
             } else {
-                this.decay(creature, i)
+                this.decay(creature, i);
+                return;
             }
         }
     }
