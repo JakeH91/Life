@@ -14,3 +14,13 @@
     Regenerate leaves over time.
     Background colour change according to time passed (to simulate day and night).
     Adjust sight capability to time of day.
+
+29/10/17:
+    Style start life button to be displayed in the middle of the screen, large, before game begins
+    Get button to reappear if all life has ceased to exist (apart from leaves)
+    Display leaderboard on the right, with the following attributes:
+        Name of life form,
+        Species,
+        Health bar,
+        Sight,
+        Speed
