@@ -25,3 +25,4 @@ Next Change to Make
         Health bar,
         Sight,
         Speed
+    Fade seamlessly between decay images (instead of clunky changes)
