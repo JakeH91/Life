@@ -179,7 +179,7 @@ export default class Life extends React.Component {
         var randomSize = Math.floor(Math.random() * 20) + 20;
         var randomSight = Math.floor(Math.random() * 10) + 10;
         var sightLoss = (randomSight*7.5)/100;
-        var randomSpeed = Math.random() + 0.5;
+        var randomSpeed = Math.floor(Math.random() * 2)+ 1;
         var randomNutrition = randomSize * 10;
         var randomHealth = Math.floor(Math.random() * 400) + 10;
 
@@ -321,7 +321,7 @@ export default class Life extends React.Component {
                         leftDirection = Math.floor(Math.random() * 2);
                         // If topDirection random number is 0, and the creature is not at the top of the board
                         // (Or the creature is at the bottom or the board)
-                        if((topDirection < 1 && lifeForm[i].position.top !== 0) || lifeForm[i].position.top === 100) {
+                        if((topDirection < 1 && !(lifeForm[i].position.top <= 0)) || lifeForm[i].position.top >= 100) {
                             // Move upwards.
                             topDirection = -(lifeForm[i].speed);
                         } 
@@ -333,7 +333,7 @@ export default class Life extends React.Component {
 
                         // If leftDirection random number is 0, and the creature is not at the absolute left of the board
                         // (Or the creature is at the absolute right or the board)
-                        if((leftDirection < 1 && lifeForm[i].position.left !== 0) || lifeForm[i].position.left === 100) {
+                        if((leftDirection < 1 && !(lifeForm[i].position.left <= 0)) || lifeForm[i].position.left >= 100) {
                             // Move left
                             leftDirection = -(lifeForm[i].speed);
                         } 
