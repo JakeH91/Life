@@ -13,10 +13,14 @@ class Carnie extends React.Component {
             position: "absolute",
             top: this.props.top + "%",
             left: this.props.left + "%",
-            transform: "translate(-50%, -50%)"
+            transform: "translate(-50%, -50%)",
+            backgroundImage: "url(" + carnieImageString + ")",
+            backgroundSize: this.props.size + "px " + this.props.size + "px",
+            transition: "background-image 0.1s ease-out"
         };
         return (
-            <img src={carnieImageString} style={carnieStyle} alt="Carnie" />
+            <div style={carnieStyle}>
+            </div>
         )
     }
 };

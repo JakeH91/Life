@@ -14,12 +14,14 @@ class Herbie extends React.Component {
             position: "absolute",
             top: this.props.top + "%",
             left: this.props.left + "%",
-            transform: "translate(-50%, -50%)"
+            transform: "translate(-50%, -50%)",
+            backgroundImage: "url(" + herbieImageString + ")",
+            backgroundSize: this.props.size + "px " + this.props.size + "px",
+            transition: "background-image 0.1s ease-out"
         };
         return (
-            <Animal>
-                <img src={herbieImageString} style={herbieStyle} alt="Herbie" />
-            </Animal>
+            <div style={herbieStyle} alt="Herbie">
+            </div>
         );
     }
 };
