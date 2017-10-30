@@ -345,7 +345,7 @@ export default class Life extends React.Component {
                     var newHealth = lifeForm[i].health - 2;
                     var lifeFormArray = lifeForm.slice();
                     lifeFormArray[i].health = newHealth;
-                    if(lifeFormArray[i].image === 0 || lifeFormArray[i].image === 7){
+                    if(lifeFormArray[i].image === 0 || lifeFormArray[i].image === 8){
                         lifeFormArray[i].image = 5;
                     } else {
                         lifeFormArray[i].image += 0.25;

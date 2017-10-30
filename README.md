@@ -20,7 +20,7 @@ Next Change to Make
     <!-- (T0007) Adjust sight capability to time of day. (29/10/17) -->
         ISSUES:
             <!-- (I0006): Creatures should stop moving (lose less health) if sight drops under certain limit (30/10/17) -->
-            (I0007): Animate sleep
+            <!-- (I0007): Animate sleep (30/10/17) -->
 
 29/10/17:
     (T0008) Style start life button to be displayed in the middle of the screen, large, before game begins
