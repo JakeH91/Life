@@ -12,7 +12,7 @@ Next Change to Make
     <!-- (T0004) Generate different speeds amoungst creatures upon generation. (29/10/17) -->
         ISSUES:
             <!-- (I0003): When a creature aproaches it's prey, if the distance is not divisible by the creature's speed, it will never reach it. (29/10/17) -->
-    (T0005) Regenerate leaves over time.
+    <!-- (T0005) Regenerate leaves over time. (30/10/17) -->
     <!-- (T0006) Background colour change according to time passed (to simulate day and night). (29/10/17) -->
         ISSUES:
             <!-- (I0004): Color change clunky. Change to fade. (30/10/17) -->

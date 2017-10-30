@@ -3,7 +3,6 @@ import Herbie from './herbie.js';
 import Carnie from './carnie.js';
 import Leaf from './leaf.js';
 import Background from './background.js';
-import StartButton from './startButton.js';
 
 export default class Life extends React.Component {
     constructor(props) {
@@ -45,13 +44,17 @@ export default class Life extends React.Component {
             timeElapsed: timeElapsed + 1
         });
         var time = this.state.timeElapsed % 24;
+        if(this.state.leaves.length < this.props.numLeaves) {
+            var keyNumber = Math.random();
+            this.generateLeaf(keyNumber);
+        }
         this.changeVision(time);
     }
 
     changeVision(time) {
         var { herbies, carnies } = this.state
         for(var i = 0; i < herbies.length; i++){
-            var tempHerbies = herbies.slice()
+            var tempHerbies = herbies.slice();
             var herbieSight = tempHerbies[i].sense.sight;
             if(time > 0 && time < 13){
                 herbieSight -= tempHerbies[i].sense.sightLoss;
@@ -557,7 +560,7 @@ export default class Life extends React.Component {
             color: "white",
             zIndex: "11"
         };
-        
+
         return(
             <div>
                 <button id="startButton" onClick={this.handleClick} style={buttonStyle}>CREATE LIFE</button>
