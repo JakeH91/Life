@@ -345,7 +345,7 @@ export default class Life extends React.Component {
                     var newHealth = lifeForm[i].health - 2;
                     var lifeFormArray = lifeForm.slice();
                     lifeFormArray[i].health = newHealth;
-                    if(lifeFormArray[i].image === 0 || lifeFormArray[i].image === 8){
+                    if(lifeFormArray[i].image === 0 || lifeFormArray[i].image === 8.75){
                         lifeFormArray[i].image = 5;
                     } else {
                         lifeFormArray[i].image += 0.25;
@@ -360,6 +360,11 @@ export default class Life extends React.Component {
                         this.setState({
                             carnies: lifeFormArray
                         });
+                    }
+
+                    // If health drops below 0, the creature dies
+                    if(lifeForm[i].health <= 0){
+                        this.die(creature, i);
                     }
                 }
             } 

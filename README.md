@@ -23,7 +23,7 @@ Next Change to Make
             <!-- (I0007): Animate sleep (30/10/17) -->
 
 29/10/17:
-    (T0008) Style start life button to be displayed in the middle of the screen, large, before game begins
+    <!-- (T0008) Style start life button to be displayed in the middle of the screen, large, before game begins (30/10/17) -->
     (T0009) Get button to reappear if all life has ceased to exist (apart from leaves)
     (T0010) Display leaderboard on the right, with the following attributes:
         (T0010a) Name of life form,
@@ -32,5 +32,5 @@ Next Change to Make
         (T0010d) Sight,
         (T0010e) Speed
     <!-- (T0011) Fade seamlessly between decay images (instead of clunky changes) (30/10/17) -->
-    (T0012) If sight is below a certain level, creatures should preserve energy (sleep)
+    <!-- (T0012) If sight is below a certain level, creatures should preserve energy (sleep) (30/10/17) -->
     (T0013) Carnies should be able to start eating herbies if there are touching at all, not just if there centres are equal
