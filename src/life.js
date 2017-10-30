@@ -40,6 +40,16 @@ export default class Life extends React.Component {
         }
     }
 
+    resetGame() {
+        for(var i = 0; i < this.state.leaves.length; i++){
+            this.remove("leaf", i);
+        }
+        this.setState({
+            timeElapsed: 0
+        });
+        clearInterval(this.timeInterval);
+    }
+
     // Add 1 to timeElapsed
     updateTime() {
         const { timeElapsed } = this.state;
@@ -609,7 +619,9 @@ export default class Life extends React.Component {
         }
 
         if(this.state.herbies.length < 1 && this.state.carnies.length < 1){
-            clearInterval(this.timeInterval);
+            this.resetGame();
+            var button = document.getElementById("startButton");
+            button.style.display = "initial";
         }
     }
 
@@ -625,7 +637,7 @@ export default class Life extends React.Component {
         );
         // And hide the button
         var button = document.getElementById("startButton");
-        button.style.display = "none"
+        button.style.display = "none";
     }
 
     render() {

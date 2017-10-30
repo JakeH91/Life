@@ -24,7 +24,7 @@ Next Change to Make
 
 29/10/17:
     <!-- (T0008) Style start life button to be displayed in the middle of the screen, large, before game begins (30/10/17) -->
-    (T0009) Get button to reappear if all life has ceased to exist (apart from leaves)
+    <!-- (T0009) Get button to reappear if all life has ceased to exist (apart from leaves) (30/10/17) -->
     (T0010) Display leaderboard on the right, with the following attributes:
         (T0010a) Name of life form,
         (T0010b) Species,
