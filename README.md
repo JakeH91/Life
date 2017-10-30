@@ -36,4 +36,4 @@ Next Change to Make
     (T0013) Carnies should be able to start eating herbies if there are touching at all, not just if there centres are equal
 
 30/10/17:
-    (T0014) Creatures should start small, then grow as they eat (Size proportional to health).
+    <!-- (T0014) Creatures should start small, then grow as they eat (Size proportional to health). (30/10/17) -->
