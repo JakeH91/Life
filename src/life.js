@@ -4,6 +4,9 @@ import Carnie from './carnie.js';
 import Leaf from './leaf.js';
 import Background from './background.js';
 
+var creatureMinSize = 20;
+var creatureMaxSize = 100;
+
 export default class Life extends React.Component {
     constructor(props) {
         super(props);
@@ -93,7 +96,7 @@ export default class Life extends React.Component {
                 top: top,
                 left: left
             },
-            nutrition: 100
+            nutrition: 200
         };
 
         // Copy the leaves array and push the new leaf to the end of that array
@@ -110,25 +113,25 @@ export default class Life extends React.Component {
         // Randomly generate stats
         var top = Math.floor(Math.random() * 100);
         var left = Math.floor(Math.random() * 100);
-        var randomSize = Math.floor(Math.random() * 20) + 20;
+        var startingSize = creatureMinSize;
         var randomSight = Math.floor(Math.random() * 10) + 10;
         var sightLoss = (randomSight*7.5)/100;
         var randomSpeed = Math.floor(Math.random() * 2)+ 1;
-        var randomNutrition = randomSize * 10;
-        var randomHealth = Math.floor(Math.random() * 400) + 10;
+        var startingNutrition = startingSize * 50;
+        var startingHealth = startingSize * 20;
 
         // Create new herbie object with random stats
         var newHerbie = {
             key: "herbie" + i,
             position: { top: top, left: left },
-            size: randomSize,
+            size: startingSize,
             sense: { 
                 sight: randomSight,
                 sightLoss: sightLoss
             },
             speed: randomSpeed,
-            nutrition: randomNutrition,
-            health: randomHealth,
+            nutrition: startingNutrition,
+            health: startingHealth,
             dead: false,
             target: "",
             image: 0
@@ -148,25 +151,25 @@ export default class Life extends React.Component {
         // Randomly generate stats
         var top = Math.floor(Math.random() * 100);
         var left = Math.floor(Math.random() * 100);
-        var randomSize = Math.floor(Math.random() * 20) + 20;
+        var startingSize = creatureMinSize;
         var randomSight = Math.floor(Math.random() * 10) + 10;
         var sightLoss = (randomSight*7.5)/100;
         var randomSpeed = Math.floor(Math.random() * 2)+ 1;
-        var randomNutrition = randomSize * 10;
-        var randomHealth = Math.floor(Math.random() * 600) + 10;
+        var startingNutrition = startingSize * 10;
+        var startingHealth = startingSize * 50;
 
         // Create new carnie object with random stats
         var newCarnie = {
             key: "carnie" + i,
             position: { top: top, left: left },
-            size: randomSize,
+            size: startingSize,
             sense: { 
                 sight: randomSight,
                 sightLoss: sightLoss
             },
             speed: randomSpeed,
-            nutrition: randomNutrition,
-            health: randomHealth,
+            nutrition: startingNutrition,
+            health: startingHealth,
             dying: false,
             target: "",
             image: 0
@@ -204,6 +207,27 @@ export default class Life extends React.Component {
                     var lifeFormArray = lifeForm.slice();
                     lifeFormArray[i].health = newHealth;
                     lifeFormArray[i].image = 0;
+                    if(creature === "herbie"){
+                        if(newHealth > 2000){
+                            lifeFormArray[i].size = creatureMaxSize;
+                        }
+                        else if(newHealth > 400) {
+                            lifeFormArray[i].size = newHealth/20;
+                        }
+                        else{
+                            lifeFormArray[i].size = creatureMinSize;
+                        }
+                    } else if(creature === "carnie"){
+                        if(newHealth > 5000){
+                            lifeFormArray[i].size = creatureMaxSize;
+                        }
+                        else if(newHealth > 1000) {
+                            lifeFormArray[i].size = newHealth/50;
+                        }
+                        else{
+                            lifeFormArray[i].size = creatureMinSize;
+                        }
+                    }
                     
                     // Update the health of that creature
                     if(creature === "herbie"){
@@ -351,6 +375,29 @@ export default class Life extends React.Component {
                         lifeFormArray[i].image += 0.25;
                     }
                     
+
+                    if(creature === "herbie"){
+                        if(newHealth > 2000){
+                            lifeFormArray[i].size = creatureMaxSize;
+                        }
+                        else if(newHealth > 400) {
+                            lifeFormArray[i].size = newHealth/20;
+                        }
+                        else{
+                            lifeFormArray[i].size = creatureMinSize;
+                        }
+                    } else if(creature === "carnie"){
+                        if(newHealth > 5000){
+                            lifeFormArray[i].size = creatureMaxSize;
+                        }
+                        else if(newHealth > 1000) {
+                            lifeFormArray[i].size = newHealth/50;
+                        }
+                        else{
+                            lifeFormArray[i].size = creatureMinSize;
+                        }
+                    }
+
                     // Update the health of that creature
                     if(creature === "herbie"){
                         this.setState({
@@ -445,7 +492,9 @@ export default class Life extends React.Component {
                 // Set theTargetIndex to current index
                 theTargetIndex = b;
                 // Add the available nutrition to the creature
-                lifeFormArray[index].health += food[theTargetIndex].nutrition;
+                var newHealth = food[theTargetIndex].nutrition;
+                lifeFormArray[index].health += newHealth;
+                
                 // And remove the target from it's array
                 this.remove(theTargetSpecies, theTargetIndex);
             } 
