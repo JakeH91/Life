@@ -6,6 +6,8 @@ class Carnie extends React.Component {
         var changeImage = Math.floor(this.props.image);
         if(changeImage !== 0 && changeImage < 5){
             carnieImageString = require("./carnieDying" + changeImage + ".png");
+        } else if(changeImage >= 5){
+            carnieImageString = require("./carnieSleeping" + changeImage + ".png");
         }
         var carnieStyle = {
             height: this.props.size,

@@ -203,6 +203,7 @@ export default class Life extends React.Component {
                     var newHealth = lifeForm[i].health - 7;
                     var lifeFormArray = lifeForm.slice();
                     lifeFormArray[i].health = newHealth;
+                    lifeFormArray[i].image = 0;
                     
                     // Update the health of that creature
                     if(creature === "herbie"){
@@ -344,6 +345,11 @@ export default class Life extends React.Component {
                     var newHealth = lifeForm[i].health - 2;
                     var lifeFormArray = lifeForm.slice();
                     lifeFormArray[i].health = newHealth;
+                    if(lifeFormArray[i].image === 0 || lifeFormArray[i].image === 7){
+                        lifeFormArray[i].image = 5;
+                    } else {
+                        lifeFormArray[i].image += 0.25;
+                    }
                     
                     // Update the health of that creature
                     if(creature === "herbie"){
