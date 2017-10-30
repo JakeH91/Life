@@ -3,6 +3,7 @@ import Herbie from './herbie.js';
 import Carnie from './carnie.js';
 import Leaf from './leaf.js';
 import Background from './background.js';
+import StartButton from './startButton.js';
 
 export default class Life extends React.Component {
     constructor(props) {
@@ -544,9 +545,22 @@ export default class Life extends React.Component {
     }
 
     render() {
+        var buttonStyle = {
+            width: 100,
+            height: 40,
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            borderRadius: 10,
+            backgroundColor: "green",
+            color: "white",
+            zIndex: "11"
+        };
+        
         return(
             <div>
-                <button id="startButton" onClick={this.handleClick}>CREATE LIFE!</button>
+                <button id="startButton" onClick={this.handleClick} style={buttonStyle}>CREATE LIFE</button>
                 {this.state.herbies.map(herbie =>
                     <Herbie size={herbie.size} top={herbie.position.top} left={herbie.position.left} key={herbie.key} image={herbie.image} />
                 )}

@@ -16,7 +16,7 @@ Next Change to Make
     <!-- (T0006) Background colour change according to time passed (to simulate day and night). (29/10/17) -->
         ISSUES:
             <!-- (I0004): Color change clunky. Change to fade. (30/10/17) -->
-            (I0005): Life forms look as bright at any time of day. Overlay the color change with high opacity.
+            <!-- (I0005): Life forms look as bright at any time of day. Overlay the color change with high opacity. (30/10/17) -->
     <!-- (T0007) Adjust sight capability to time of day. (29/10/17) -->
         ISSUES:
             (I0006): May need to increase sight at night a bit.
