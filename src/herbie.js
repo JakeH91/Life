@@ -1,5 +1,4 @@
 import React from 'react';
-import Animal from './animal.js';
 
 class Herbie extends React.Component {
     render() {

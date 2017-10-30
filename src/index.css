@@ -1,5 +1,4 @@
-body {
-    background-color: rgb(255,255,255);
-
-    transition: background-color 1s ease-out;
+html, body {
+    margin: 0;
+    height: 100%;
 }

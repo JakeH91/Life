@@ -2,6 +2,7 @@ import React from 'react';
 import Herbie from './herbie.js';
 import Carnie from './carnie.js';
 import Leaf from './leaf.js';
+import Background from './background.js';
 
 export default class Life extends React.Component {
     constructor(props) {
@@ -43,40 +44,7 @@ export default class Life extends React.Component {
             timeElapsed: timeElapsed + 1
         });
         var time = this.state.timeElapsed % 24;
-        this.changeLighting(time);
         this.changeVision(time);
-    }
-
-    changeLighting(time) {
-        var backgroundStyle, r, g, b;
-
-        var addition = Math.floor(255/12);
-        // Maybe change background color instead of just black and white
-        // var gAddition = Math.floor(230/12);
-        // var bAddition = Math.floor(255/12);
-        if(time > 0 && time < 13){ 
-            r = 255;
-            g = 255;
-            b = 255;
-            r -= (addition * time);
-            g -= (addition * time);
-            b -= (addition * time);
-            
-        } else if(time > 12){
-            r = 0;
-            g = 0;
-            b = 0;
-            r += (addition * (time - 12));
-            g += (addition * (time - 12));
-            b += (addition * (time - 12));
-        } else if(time === 0){
-            r = 255;
-            g = 255;
-            b = 255;
-        }
-
-        backgroundStyle = "rgb(" + r + ", " + g + ", " + b + ")";
-        document.body.style.backgroundColor = backgroundStyle;
     }
 
     changeVision(time) {
@@ -588,6 +556,7 @@ export default class Life extends React.Component {
                 {this.state.leaves.map(leaf =>
                     <Leaf top={leaf.position.top} left={leaf.position.left} key={leaf.key} />
                 )}
+                <Background time={this.state.timeElapsed} />
             </div>
             
         );

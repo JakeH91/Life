@@ -30,6 +30,6 @@ Next Change to Make
         (T0010c) Health bar,
         (T0010d) Sight,
         (T0010e) Speed
-    (T0011) Fade seamlessly between decay images (instead of clunky changes)
+    <!-- (T0011) Fade seamlessly between decay images (instead of clunky changes) (30/10/17) -->
     (T0012) If sight is below a certain level, creatures should preserve energy (sleep)
     (T0013) Carnies should be able to start eating herbies if there are touching at all, not just if there centres are equal

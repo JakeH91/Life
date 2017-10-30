@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import Life from './life.js';
+import './index.css';
 
 var destination = document.getElementById("container");
 
