@@ -33,7 +33,9 @@ Next Change to Make
         (T0010e) Speed
     <!-- (T0011) Fade seamlessly between decay images (instead of clunky changes) (30/10/17) -->
     <!-- (T0012) If sight is below a certain level, creatures should preserve energy (sleep) (30/10/17) -->
-    (T0013) Carnies should be able to start eating herbies if there are touching at all, not just if there centres are equal
+    <!-- (T0013) Carnies should be able to start eating herbies if there are touching at all, not just if there centres are equal (30/10/17) -->
+        ISSUES:
+            (I0008) The edge of the creature still has to touch the center of it's food... Maybe that's fine, I need to think about it.
 
 30/10/17:
     <!-- (T0014) Creatures should start small, then grow as they eat (Size proportional to health). (30/10/17) -->

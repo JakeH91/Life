@@ -7,6 +7,26 @@ import Background from './background.js';
 var creatureMinSize = 20;
 var creatureMaxSize = 100;
 
+function documentHeight() {
+    return Math.max(
+        document.documentElement.clientHeight,
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.offsetHeight
+    );
+}
+
+function documentWidth() {
+    return Math.max(
+        document.documentElement.clientWidth,
+        document.body.scrollWidth,
+        document.documentElement.scrollWidth,
+        document.body.offsetWidth,
+        document.documentElement.offsetWidth
+    );
+}
+
 export default class Life extends React.Component {
     constructor(props) {
         super(props);
@@ -273,6 +293,8 @@ export default class Life extends React.Component {
                                 // Set difference between left positions of creature and food to leftDifference
                                 var leftDifference = lifeForm[i].position.left - theTarget.position.left;
 
+                                var heightAsPercentage = (lifeForm[i].size * 100)/documentHeight();
+                                var widthAsPercentage = (lifeForm[i].size * 100)/documentWidth();
 
                                 // If it's on the same y-axis, no need to changein that direction.
                                 if(topDifference === 0 || Math.abs(topDifference) < lifeForm[i].speed){
@@ -300,7 +322,7 @@ export default class Life extends React.Component {
                                     leftDirection = -(lifeForm[i].speed);
                                 }
                                 // If with that last movement you landed on the leaf
-                                if((topDifference === 0) && (leftDifference === 0)){
+                                if((Math.abs(topDifference) < (heightAsPercentage/2)) && (Math.abs(leftDifference) < (widthAsPercentage/2))){
                                     // Eat the leaf.
                                     this.eat(creature, i);
                                 }
@@ -552,9 +574,12 @@ export default class Life extends React.Component {
         } else if(creature === "carnie"){
             var { carnies: lifeForm } = this.state;
         }
-
+        
         // Change the image (every other run through) and take away some nutrition
         var lifeFormArray = lifeForm.slice();
+        if(lifeFormArray[i].image >= 5){
+            lifeFormArray[i].image = 0;
+        }
         lifeFormArray[i].image += 0.5;
         lifeFormArray[i].nutrition -= 50;
         
