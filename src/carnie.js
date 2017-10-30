@@ -4,7 +4,7 @@ class Carnie extends React.Component {
     render() {
         var carnieImageString = require("./carnie.png");
         var changeImage = Math.floor(this.props.image);
-        if(changeImage !== 0 && changeImage !== 5){
+        if(changeImage !== 0 && changeImage < 5){
             carnieImageString = require("./carnieDying" + changeImage + ".png");
         }
         var carnieStyle = {

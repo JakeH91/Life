@@ -19,7 +19,7 @@ Next Change to Make
             <!-- (I0005): Life forms look as bright at any time of day. Overlay the color change with high opacity. (30/10/17) -->
     <!-- (T0007) Adjust sight capability to time of day. (29/10/17) -->
         ISSUES:
-            (I0006): Creatures should stop moving (lose less health) if sight drops under certain limit
+            <!-- (I0006): Creatures should stop moving (lose less health) if sight drops under certain limit (30/10/17) -->
 
 29/10/17:
     (T0008) Style start life button to be displayed in the middle of the screen, large, before game begins

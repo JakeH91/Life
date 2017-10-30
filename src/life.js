@@ -153,7 +153,7 @@ export default class Life extends React.Component {
         var sightLoss = (randomSight*7.5)/100;
         var randomSpeed = Math.floor(Math.random() * 2)+ 1;
         var randomNutrition = randomSize * 10;
-        var randomHealth = Math.floor(Math.random() * 400) + 10;
+        var randomHealth = Math.floor(Math.random() * 600) + 10;
 
         // Create new carnie object with random stats
         var newCarnie = {
@@ -197,133 +197,14 @@ export default class Life extends React.Component {
         for(var i = 0; i < lifeForm.length; i++){
             // If it isn't dead...
             if(!lifeForm[i].dead){
-                // Minus 7 health point
-                var newHealth = lifeForm[i].health - 7;
-                var lifeFormArray = lifeForm.slice();
-                lifeFormArray[i].health = newHealth;
-                
-                // Update the health of that creature
-                if(creature === "herbie"){
-                    this.setState({
-                        herbies: lifeFormArray
-                    });
-                } else if(creature === "carnie"){
-                    this.setState({
-                        carnies: lifeFormArray
-                    });
-                }
-                
-                // If health drops below 0, the creature dies
-                if(lifeForm[i].health <= 0){
-                    this.die(creature, i);
-                }
-                // If health is still above 0...
-                else {
-                    var topDirection, leftDirection;
-                    // If the creature has a target locked...
-                    if(lifeForm[i].target){
-                        var theTarget = undefined;
-                        // Set theTarget equal to the object of whatever it is targeting
-                        for(var a = 0; a < food.length; a++){
-                            if(food[a].key === lifeForm[i].target){
-                                theTarget = food[a];  
-                            }
-                        }
-                        // If that target still exists (and hasn't been eaten or decayed to nothing)
-                        if(theTarget){
-                            // Set difference between top positions of creature and food to topDifference
-                            var topDifference = lifeForm[i].position.top - theTarget.position.top;
-                            // Set difference between left positions of creature and food to leftDifference
-                            var leftDifference = lifeForm[i].position.left - theTarget.position.left;
-
-
-                            // If it's on the same y-axis, no need to changein that direction.
-                            if(topDifference === 0 || Math.abs(topDifference) < lifeForm[i].speed){
-                                topDirection = topDifference;
-                            } 
-                            // If it's below, move downwards.
-                            else if(topDifference < 0) {
-                                topDirection = lifeForm[i].speed;
-                            } 
-                            // If it's above, move upwards.
-                            else if(topDifference > 0) {
-                                topDirection = -(lifeForm[i].speed);
-                            }
-
-                            // If it's on the same x-axis, no need to change in that direction.
-                            if(leftDifference === 0 || Math.abs(leftDifference) < lifeForm[i].speed){
-                                leftDirection = leftDifference;
-                            }
-                            // If it's to the right, move right.
-                            else if(leftDifference < 0) {
-                                leftDirection = lifeForm[i].speed;
-                            }
-                            // If it's to the left, move left.
-                            else if(leftDifference > 0) {
-                                leftDirection = -(lifeForm[i].speed);
-                            }
-                            // If with that last movement you landed on the leaf
-                            if((topDifference === 0) && (leftDifference === 0)){
-                                // Eat the leaf.
-                                this.eat(creature, i);
-                            }
-                        } 
-                        // If the target no longer exists...
-                        else {
-                            // Remove the target from the creature's object
-                            lifeFormArray = lifeForm.slice();
-                            lifeFormArray[i].target = "";
-                            // And update the state accordingly.
-                            if(creature === "herbie"){
-                                this.setState({
-                                    herbies: lifeFormArray
-                                });
-                            } else if(creature === "carnie"){
-                                this.setState({
-                                    carnies: lifeFormArray
-                                });
-                            }
-                        }
-                        
-                    } 
-                    // If the creature has no target...
-                    else {
-                        // Generate random numbers
-                        topDirection = Math.floor(Math.random() * 2);
-                        leftDirection = Math.floor(Math.random() * 2);
-                        // If topDirection random number is 0, and the creature is not at the top of the board
-                        // (Or the creature is at the bottom or the board)
-                        if((topDirection < 1 && !(lifeForm[i].position.top <= 0)) || lifeForm[i].position.top >= 100) {
-                            // Move upwards.
-                            topDirection = -(lifeForm[i].speed);
-                        } 
-                        // Otherwise, if topDirection random number is 1,
-                        else {
-                            // Move downwards.
-                            topDirection = lifeForm[i].speed;
-                        }
-
-                        // If leftDirection random number is 0, and the creature is not at the absolute left of the board
-                        // (Or the creature is at the absolute right or the board)
-                        if((leftDirection < 1 && !(lifeForm[i].position.left <= 0)) || lifeForm[i].position.left >= 100) {
-                            // Move left
-                            leftDirection = -(lifeForm[i].speed);
-                        } 
-                        // Otherwise, if leftDirection random number is 1,
-                        else {
-                            // Mover right
-                            leftDirection = lifeForm[i].speed;
-                        }
-                        // Look for a target
-                        this.searchForFood(creature, i);
-                    }
-
-                    // Once direction has been decided, add movement to temporary state variable,
-                    var newTopState = lifeForm[i].position.top + topDirection;
-                    var newLeftState = lifeForm[i].position.left + leftDirection;
-                    lifeFormArray = lifeForm.slice();
-                    lifeFormArray[i].position = {top: newTopState, left: newLeftState};
-                    // Then set the states to those variables
+                // If it can see well enough
+                if(lifeForm[i].sense.sight > 3){
+                    // Minus 7 health points
+                    var newHealth = lifeForm[i].health - 7;
+                    var lifeFormArray = lifeForm.slice();
+                    lifeFormArray[i].health = newHealth;
+                    
+                    // Update the health of that creature
                     if(creature === "herbie"){
                         this.setState({
                             herbies: lifeFormArray
@@ -333,7 +214,147 @@ export default class Life extends React.Component {
                             carnies: lifeFormArray
                         });
                     }
-    
+                    
+                    // If health drops below 0, the creature dies
+                    if(lifeForm[i].health <= 0){
+                        this.die(creature, i);
+                    }
+                    // If health is still above 0...
+                    else {
+                        var topDirection, leftDirection;
+                        // If the creature has a target locked...
+                        if(lifeForm[i].target){
+                            var theTarget = undefined;
+                            // Set theTarget equal to the object of whatever it is targeting
+                            for(var a = 0; a < food.length; a++){
+                                if(food[a].key === lifeForm[i].target){
+                                    theTarget = food[a];  
+                                }
+                            }
+                            // If that target still exists (and hasn't been eaten or decayed to nothing)
+                            if(theTarget){
+                                // Set difference between top positions of creature and food to topDifference
+                                var topDifference = lifeForm[i].position.top - theTarget.position.top;
+                                // Set difference between left positions of creature and food to leftDifference
+                                var leftDifference = lifeForm[i].position.left - theTarget.position.left;
+
+
+                                // If it's on the same y-axis, no need to changein that direction.
+                                if(topDifference === 0 || Math.abs(topDifference) < lifeForm[i].speed){
+                                    topDirection = topDifference;
+                                } 
+                                // If it's below, move downwards.
+                                else if(topDifference < 0) {
+                                    topDirection = lifeForm[i].speed;
+                                } 
+                                // If it's above, move upwards.
+                                else if(topDifference > 0) {
+                                    topDirection = -(lifeForm[i].speed);
+                                }
+
+                                // If it's on the same x-axis, no need to change in that direction.
+                                if(leftDifference === 0 || Math.abs(leftDifference) < lifeForm[i].speed){
+                                    leftDirection = leftDifference;
+                                }
+                                // If it's to the right, move right.
+                                else if(leftDifference < 0) {
+                                    leftDirection = lifeForm[i].speed;
+                                }
+                                // If it's to the left, move left.
+                                else if(leftDifference > 0) {
+                                    leftDirection = -(lifeForm[i].speed);
+                                }
+                                // If with that last movement you landed on the leaf
+                                if((topDifference === 0) && (leftDifference === 0)){
+                                    // Eat the leaf.
+                                    this.eat(creature, i);
+                                }
+                            } 
+                            // If the target no longer exists...
+                            else {
+                                // Remove the target from the creature's object
+                                lifeFormArray = lifeForm.slice();
+                                lifeFormArray[i].target = "";
+                                // And update the state accordingly.
+                                if(creature === "herbie"){
+                                    this.setState({
+                                        herbies: lifeFormArray
+                                    });
+                                } else if(creature === "carnie"){
+                                    this.setState({
+                                        carnies: lifeFormArray
+                                    });
+                                }
+                            }
+                            
+                        } 
+                        // If the creature has no target...
+                        else {
+                            // Generate random numbers
+                            topDirection = Math.floor(Math.random() * 2);
+                            leftDirection = Math.floor(Math.random() * 2);
+                            // If topDirection random number is 0, and the creature is not at the top of the board
+                            // (Or the creature is at the bottom or the board)
+                            if((topDirection < 1 && !(lifeForm[i].position.top <= 0)) || lifeForm[i].position.top >= 100) {
+                                // Move upwards.
+                                topDirection = -(lifeForm[i].speed);
+                            } 
+                            // Otherwise, if topDirection random number is 1,
+                            else {
+                                // Move downwards.
+                                topDirection = lifeForm[i].speed;
+                            }
+
+                            // If leftDirection random number is 0, and the creature is not at the absolute left of the board
+                            // (Or the creature is at the absolute right or the board)
+                            if((leftDirection < 1 && !(lifeForm[i].position.left <= 0)) || lifeForm[i].position.left >= 100) {
+                                // Move left
+                                leftDirection = -(lifeForm[i].speed);
+                            } 
+                            // Otherwise, if leftDirection random number is 1,
+                            else {
+                                // Mover right
+                                leftDirection = lifeForm[i].speed;
+                            }
+                            // Look for a target
+                            this.searchForFood(creature, i);
+                        }
+
+                        // Once direction has been decided, add movement to temporary state variable,
+                        var newTopState = lifeForm[i].position.top + topDirection;
+                        var newLeftState = lifeForm[i].position.left + leftDirection;
+                        lifeFormArray = lifeForm.slice();
+                        lifeFormArray[i].position = {top: newTopState, left: newLeftState};
+                        // Then set the states to those variables
+                        if(creature === "herbie"){
+                            this.setState({
+                                herbies: lifeFormArray
+                            });
+                        } else if(creature === "carnie"){
+                            this.setState({
+                                carnies: lifeFormArray
+                            });
+                        }
+        
+                
+                    }
+                
+                } else {
+                    // Minus 2 health points
+                    var newHealth = lifeForm[i].health - 2;
+                    var lifeFormArray = lifeForm.slice();
+                    lifeFormArray[i].health = newHealth;
+                    
+                    // Update the health of that creature
+                    if(creature === "herbie"){
+                        this.setState({
+                            herbies: lifeFormArray
+                        });
+                    } else if(creature === "carnie"){
+                        this.setState({
+                            carnies: lifeFormArray
+                        });
+                    }
                 }
             } 
             // If the creature is dead...
