@@ -40,3 +40,6 @@ Next Change to Make
 30/10/17:
     <!-- (T0014) Creatures should start small, then grow as they eat (Size proportional to health). (30/10/17) -->
     (T0015) Carnies should damage herbies before eating them entirely.
+
+31/10/17:
+    (T0016) Refactor Movement Code
