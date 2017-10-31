@@ -44,4 +44,6 @@ Next Change to Make
 31/10/17:
     <!-- (T0016) Refactor All Code (31/10/17) -->
         ISSUES:
-            (I0009) Herbies not being removed when carnies eat them.
+            <!-- (I0009) Herbies not being removed when carnies eat them. (31/10/17) -->
+            (I0010) Leaves not disappearing on reset
+            (I0011) Creatures not growing as they eat

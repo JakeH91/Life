@@ -69,18 +69,11 @@ export default class Life extends React.Component {
     }
 
     resetGame() {
-        for(var i = 0; i < this.state.leaves.length; i++){
-            this.remove("leaf", i);
-        }
-        for(var j = 0; j < this.state.herbies.length; j++){
-            this.remove("herbie", j);
-        }
-        for(var k = 0; k < this.state.carnies.length; k++){
-            this.remove("carnie", i);
-        }
-
         this.setState({
-            timeElapsed: 0
+            timeElapsed: 0,
+            herbies: [],
+            carnies: [],
+            leaves: []
         });
     }
 
@@ -272,6 +265,8 @@ export default class Life extends React.Component {
         var herbieRemovals = [];
         var copyCarnies = this.state.carnies.slice();
         var carnieRemovals = [];
+        var copyLeaves = this.state.leaves.slice();
+        var leafRemovals = [];
 
         for(var i = 0; i < this.state.herbies.length; i++){
             var tempHerbiesObject = this.decide(copyHerbies[i]);
@@ -280,7 +275,15 @@ export default class Life extends React.Component {
             } else { // Otherwise
                 copyHerbies[i] = tempHerbiesObject.lifeForm; // Update this herbie's attributes
             }
+            if(tempHerbiesObject.toEat !== -1){
+                leafRemovals.push(tempHerbiesObject.toEat);
+            }
         }
+
+        var newLeavesArray = this.remove(copyLeaves, leafRemovals);
+        var newHerbiesArray = this.remove(copyHerbies, herbieRemovals);
+        copyHerbies = newHerbiesArray.slice();
+        herbieRemovals = [];
 
         for(var j = 0; j < this.state.carnies.length; j++){
             var tempCarniesObject = this.decide(copyCarnies[j]);
@@ -289,15 +292,19 @@ export default class Life extends React.Component {
             } else { // Otherwise
                 copyCarnies[j] = tempCarniesObject.lifeForm; // Update this carnie's attributes
             }
+            if(tempCarniesObject.toEat !== -1){
+                herbieRemovals.push(tempCarniesObject.toEat);   
+            }
         }
+        newHerbiesArray = this.remove(copyHerbies, herbieRemovals);
 
         // Return arrays with any fully decayed creatures removed
-        var newHerbiesArray = this.remove(copyHerbies, herbieRemovals);
         var newCarniesArray = this.remove(copyCarnies, carnieRemovals);
 
         this.setState({
             herbies: newHerbiesArray,
-            carnies: newCarniesArray
+            carnies: newCarniesArray,
+            leaves: newLeavesArray
         })
 
         if(this.state.herbies.length < 1 && this.state.carnies.length < 1){
@@ -325,10 +332,8 @@ export default class Life extends React.Component {
                     //     lifeForm.foodTarget = this.searchForFood(lifeForm);
                     //     lifeForm.mateTarget = this.searchForMate(lifeForm);
                     // }
-                    var lookingForFood = this.searchForFood(lifeForm);
-                    if(lookingForFood){
-                        lifeForm.foodTarget = this.searchForFood(lifeForm);
-                    }
+                    lifeForm.foodTarget = this.searchForFood(lifeForm);
+                    
                     decision = this.moveRandomly(lifeForm);
                     
                     
@@ -339,8 +344,9 @@ export default class Life extends React.Component {
                 decision = this.sleep(lifeForm);
             }
             if(lifeForm.health <= 0){
-                decision.lifeForm.health = 0;
-                decision.lifeForm.dead = true;
+                lifeForm.health = 0;
+                lifeForm.dead = true;
+                decision.lifeForm = lifeForm;
             }
         } else {
             
@@ -349,30 +355,33 @@ export default class Life extends React.Component {
 
         if(lifeForm.species === "herbie"){
             if(lifeForm.health > 2000){
-                decision.lifeForm.size = creatureMaxSize;
+                lifeForm.size = creatureMaxSize;
             }
             else if(lifeForm.health > 400) {
-                decision.lifeForm.size = lifeForm.health/20;
+                lifeForm.size = lifeForm.health/20;
             }
             else{
-                decision.lifeForm.size = creatureMinSize;
+                lifeForm.size = creatureMinSize;
             }
+            decision.lifeForm = lifeForm;
         } else if(lifeForm.species === "carnie"){
             if(lifeForm.health > 5000){
-                decision.lifeForm.size = creatureMaxSize;
+                lifeForm.size = creatureMaxSize;
             }
             else if(lifeForm.health > 1000) {
-                decision.lifeForm.size = lifeForm.health/50;
+                lifeForm.size = lifeForm.health/50;
             }
             else{
-                decision.lifeForm.size = creatureMinSize;
+                lifeForm.size = creatureMinSize;
             }
+            decision.lifeForm = lifeForm;
         }
         
 
         return {
             lifeForm: decision.lifeForm,
-            toRemove: decision.toRemove
+            toRemove: decision.toRemove,
+            toEat: decision.toEat
         };
 
 
@@ -465,11 +474,13 @@ export default class Life extends React.Component {
             var newLeftState = lifeForm.position.left + leftDirection;
             
             lifeForm.position = {top: newTopState, left: newLeftState};
-
+            var toEat = -1;
             // If with that last movement you landed on the target
             if((Math.abs(topDifference) < (heightAsPercentage/2)) && (Math.abs(leftDifference) < (widthAsPercentage/2))){
                 // Eat it.
-                this.eat(lifeForm);
+                toEat = targetIndex;
+                lifeForm.health = theTarget.nutrition;
+                lifeForm.foodTarget = null;
             }
         } else {
             lifeForm.foodTarget = null;
@@ -477,42 +488,9 @@ export default class Life extends React.Component {
 
         return {
             lifeForm: lifeForm,
-            toRemove: false
+            toRemove: false,
+            toEat: toEat
         }
-    }
-
-    eat(lifeForm) {
-        var target;
-        // Set the lifeForm, food and target species variables depending on the creature
-        if(lifeForm.species === "herbie"){
-            target = this.state.leaves;
-        } else if(lifeForm.species === "carnie"){
-            target = this.state.herbies;
-        }
-        
-        var targetIndex = target.indexOf(lifeForm.foodTarget);
-        this.digest(lifeForm, targetIndex);
-        
-        lifeForm.health += lifeForm.foodTarget.nutrition;
-        lifeForm.foodTarget = null;
-
-    }
-
-    digest(lifeForm, index){
-        if(lifeForm.species === "carnie"){
-            var copyHerbies = this.state.herbies.slice();
-            console.log(copyHerbies);
-            copyHerbies.splice(index, 1);
-            this.setState({
-                herbies: copyHerbies
-            });
-        } else if(lifeForm.species === "herbie"){
-            var copyLeaves = this.state.leaves.slice();
-            copyLeaves.splice(index, 1);
-            this.setState({
-                leaves: copyLeaves
-            });
-        } 
     }
 
     searchForMate() {
@@ -554,7 +532,8 @@ export default class Life extends React.Component {
 
         return {
             lifeForm: lifeForm,
-            toRemove: false
+            toRemove: false,
+            toEat: -1
         }
     }
 
@@ -567,7 +546,8 @@ export default class Life extends React.Component {
 
         return {
             lifeForm: lifeForm,
-            toRemove: false
+            toRemove: false,
+            toEat: -1
         }
     }
 
@@ -583,7 +563,8 @@ export default class Life extends React.Component {
 
         return {
             lifeForm: lifeForm,
-            toRemove: toRemove
+            toRemove: toRemove,
+            toEat: -1
         }
     }
     
