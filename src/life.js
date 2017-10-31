@@ -45,9 +45,6 @@ export default class Life extends React.Component {
 
     // Initialize game
     startGame() {
-        // Start the flow of time
-        this.timeInterval = setInterval(() => this.updateTime(), 1000);
-        
         // Generate life forms according to props
         for(var i = 0; i < this.props.numLeaves; i++) {
             this.generateLeaf(i);
@@ -58,60 +55,33 @@ export default class Life extends React.Component {
         for(var k = 0; k < this.props.numCarnies; k++) {
             this.generateCarnie(k);
         }
+        // Start the flow of time
+        this.timeInterval = setInterval(() => this.updateTime(), 1000);
+        
+        this.movementInterval = setInterval(() => this.updateGame(), 100);
+    }
+
+    endGame() {
+        clearInterval(this.timeInterval);
+        clearInterval(this.movementInterval);
+        var button = document.getElementById("startButton");
+        button.style.display = "initial";
     }
 
     resetGame() {
         for(var i = 0; i < this.state.leaves.length; i++){
             this.remove("leaf", i);
         }
+        for(var j = 0; j < this.state.herbies.length; j++){
+            this.remove("herbie", j);
+        }
+        for(var k = 0; k < this.state.carnies.length; k++){
+            this.remove("carnie", i);
+        }
+
         this.setState({
             timeElapsed: 0
         });
-        clearInterval(this.timeInterval);
-    }
-
-    // Add 1 to timeElapsed
-    updateTime() {
-        const { timeElapsed } = this.state;
-        this.setState({
-            timeElapsed: timeElapsed + 1
-        });
-        var time = this.state.timeElapsed % 24;
-        if(this.state.leaves.length < this.props.numLeaves) {
-            var keyNumber = Math.random();
-            this.generateLeaf(keyNumber);
-        }
-        this.changeVision(time);
-    }
-
-    changeVision(time) {
-        var { herbies, carnies } = this.state
-        for(var i = 0; i < herbies.length; i++){
-            var tempHerbies = herbies.slice();
-            var herbieSight = tempHerbies[i].sense.sight;
-            if(time > 0 && time < 13){
-                herbieSight -= tempHerbies[i].sense.sightLoss;
-            } else if (time > 12){
-                herbieSight += tempHerbies[i].sense.sightLoss;
-            }
-            tempHerbies[i].sense.sight = herbieSight;
-            this.setState({
-                herbies: tempHerbies
-            });
-        }
-        for(var j = 0; j < carnies.length; j++){
-            var tempCarnies = carnies.slice()
-            var carnieSight = tempCarnies[j].sense.sight;
-            if(time > 0 && time < 13){
-                carnieSight -= tempCarnies[j].sense.sightLoss;
-            } else if (time > 12){
-                carnieSight += tempCarnies[j].sense.sightLoss;
-            }
-            tempCarnies[j].sense.sight = carnieSight;
-            this.setState({
-                carnies: tempCarnies
-            });
-        }
     }
 
     generateLeaf(i) {
@@ -126,7 +96,8 @@ export default class Life extends React.Component {
                 top: top,
                 left: left
             },
-            nutrition: 200
+            nutrition: 200,
+            species: "leaf"
         };
 
         // Copy the leaves array and push the new leaf to the end of that array
@@ -155,6 +126,8 @@ export default class Life extends React.Component {
             key: "herbie" + i,
             position: { top: top, left: left },
             size: startingSize,
+            species: "herbie",
+            age: 0,
             sense: { 
                 sight: randomSight,
                 sightLoss: sightLoss
@@ -162,8 +135,11 @@ export default class Life extends React.Component {
             speed: randomSpeed,
             nutrition: startingNutrition,
             health: startingHealth,
+            foodTarget: null,
+            pregnant: false,
+            mateTarget: null,
+            activePredator: null,
             dead: false,
-            target: "",
             image: 0
         }
 
@@ -185,7 +161,7 @@ export default class Life extends React.Component {
         var randomSight = Math.floor(Math.random() * 10) + 10;
         var sightLoss = (randomSight*7.5)/100;
         var randomSpeed = Math.floor(Math.random() * 2)+ 1;
-        var startingNutrition = startingSize * 10;
+        var startingNutrition = startingSize * 50;
         var startingHealth = startingSize * 50;
 
         // Create new carnie object with random stats
@@ -193,6 +169,8 @@ export default class Life extends React.Component {
             key: "carnie" + i,
             position: { top: top, left: left },
             size: startingSize,
+            species: "carnie",
+            age: 0,
             sense: { 
                 sight: randomSight,
                 sightLoss: sightLoss
@@ -200,8 +178,11 @@ export default class Life extends React.Component {
             speed: randomSpeed,
             nutrition: startingNutrition,
             health: startingHealth,
+            foodTarget: null,
+            pregnant: false,
+            mateTarget: null,
+            activePredator: null,
             dying: false,
-            target: "",
             image: 0
         }
 
@@ -213,453 +194,417 @@ export default class Life extends React.Component {
         this.setState({
             carnies: carniesArray
         });
+    }
+
+
+    // Add 1 to timeElapsed
+    updateTime() {
+        const { timeElapsed } = this.state;
+         if(this.state.timeElapsed > 0){
+            const { herbies, carnies } = this.state;
+            
+            var copyHerbies = this.state.herbies.slice();
+            if(herbies.length > 0){
+                for(var i = 0; i < herbies.length; i++){
+                    copyHerbies[i].age += 1;
+                }
+            }
+            
+            var copyCarnies = carnies.slice();
+            if(carnies.length > 0){
+                for(var j = 0; j < carnies.length; j++){
+                    copyCarnies[j].age += 1;
+                }
+            }
+            
+            this.setState({
+                timeElapsed: timeElapsed + 1,
+                herbies: copyHerbies,
+                carnies: copyCarnies
+            });
+        } else {
+            this.setState({
+                timeElapsed: timeElapsed + 1,
+            });
+        }
+
+        var time = this.state.timeElapsed % 24;
+        if(this.state.leaves.length < this.props.numLeaves) {
+            var keyNumber = Math.random();
+            this.generateLeaf(keyNumber);
+        }
+        this.changeVision(time);
+    }
+
+    changeVision(time) {
+        var { herbies, carnies } = this.state;
+        for(var i = 0; i < herbies.length; i++){
+            var tempHerbies = herbies.slice();
+            var herbieSight = tempHerbies[i].sense.sight;
+            if(time > 0 && time < 13){
+                herbieSight -= tempHerbies[i].sense.sightLoss;
+            } else if (time > 12){
+                herbieSight += tempHerbies[i].sense.sightLoss;
+            }
+            tempHerbies[i].sense.sight = herbieSight;
+            this.setState({
+                herbies: tempHerbies
+            });
+        }
+        for(var j = 0; j < carnies.length; j++){
+            var tempCarnies = carnies.slice()
+            var carnieSight = tempCarnies[j].sense.sight;
+            if(time > 0 && time < 13){
+                carnieSight -= tempCarnies[j].sense.sightLoss;
+            } else if (time > 12){
+                carnieSight += tempCarnies[j].sense.sightLoss;
+            }
+            tempCarnies[j].sense.sight = carnieSight;
+            this.setState({
+                carnies: tempCarnies
+            });
+        }
+    }
+
+
+    updateGame() {
+        var copyHerbies = this.state.herbies.slice();
+        var herbieRemovals = [];
+        var copyCarnies = this.state.carnies.slice();
+        var carnieRemovals = [];
+
+        for(var i = 0; i < this.state.herbies.length; i++){
+            var tempHerbiesObject = this.decide(copyHerbies[i]);
+            if(tempHerbiesObject.toRemove){ // If this herbie is to be removed
+                herbieRemovals.push(i); // Add the index to the removals array
+            } else { // Otherwise
+                copyHerbies[i] = tempHerbiesObject.lifeForm; // Update this herbie's attributes
+            }
+        }
+
+        for(var j = 0; j < this.state.carnies.length; j++){
+            var tempCarniesObject = this.decide(copyCarnies[j]);
+            if(tempCarniesObject.toRemove){ // If this carnie is to be removed
+                carnieRemovals.push(j); // Add the index to the removals array
+            } else { // Otherwise
+                copyCarnies[j] = tempCarniesObject.lifeForm; // Update this carnie's attributes
+            }
+        }
+
+        // Return arrays with any fully decayed creatures removed
+        var newHerbiesArray = this.remove(copyHerbies, herbieRemovals);
+        var newCarniesArray = this.remove(copyCarnies, carnieRemovals);
+
+        this.setState({
+            herbies: newHerbiesArray,
+            carnies: newCarniesArray
+        })
+
+        if(this.state.herbies.length < 1 && this.state.carnies.length < 1){
+            this.endGame();
+        }
+    }
+
+    decide(lifeForm) {
+        var decision;
+        if(!lifeForm.dead){
+            if(lifeForm.sense.sight > 3){
+                lifeForm.image = 0;
+                lifeForm.health -= 7;
+                if(lifeForm.activePredator){
+                    console.log(lifeForm.species + " is running away!!!");
+                    decision = this.escape(lifeForm);
+                } else if((!lifeForm.pregnant) && (lifeForm.age > 3) && this.searchForMate(lifeForm)) { // searchForFood returns true or false
+                    console.log(lifeForm.species + " is following a potential mate.");
+                    decision = this.trackMate(lifeForm);
+                } else if(lifeForm.foodTarget) { // searchForFood returns true or false
+                    decision = this.hunt(lifeForm);
+                }  else {
+                    // lifeForm.activePredator = this.checkForEnemies(lifeForm);
+                    // if(!lifeForm.activePredator){
+                    //     lifeForm.foodTarget = this.searchForFood(lifeForm);
+                    //     lifeForm.mateTarget = this.searchForMate(lifeForm);
+                    // }
+                    var lookingForFood = this.searchForFood(lifeForm);
+                    if(lookingForFood){
+                        lifeForm.foodTarget = this.searchForFood(lifeForm);
+                    }
+                    decision = this.moveRandomly(lifeForm);
+                    
+                    
+                    
+                }
+            } else{
+                lifeForm.health -= 2;
+                decision = this.sleep(lifeForm);
+            }
+            if(lifeForm.health <= 0){
+                decision.lifeForm.health = 0;
+                decision.lifeForm.dead = true;
+            }
+        } else {
+            
+            decision = this.decay(lifeForm);
+        }
+
+        if(lifeForm.species === "herbie"){
+            if(lifeForm.health > 2000){
+                decision.lifeForm.size = creatureMaxSize;
+            }
+            else if(lifeForm.health > 400) {
+                decision.lifeForm.size = lifeForm.health/20;
+            }
+            else{
+                decision.lifeForm.size = creatureMinSize;
+            }
+        } else if(lifeForm.species === "carnie"){
+            if(lifeForm.health > 5000){
+                decision.lifeForm.size = creatureMaxSize;
+            }
+            else if(lifeForm.health > 1000) {
+                decision.lifeForm.size = lifeForm.health/50;
+            }
+            else{
+                decision.lifeForm.size = creatureMinSize;
+            }
+        }
+        
+
+        return {
+            lifeForm: decision.lifeForm,
+            toRemove: decision.toRemove
+        };
+
 
     }
     
-    // Creature movement logic
-    move(creature) {
-        // Set the lifeForm and food variables depending on the creature
-        if(creature === "herbie"){
-            var { herbies: lifeForm, leaves: food } = this.state;
-
-        } else if(creature === "carnie"){
-            var { carnies: lifeForm, herbies: food } = this.state;
-        }
-        
-        // Cycle through all instances of that creature
-        for(var i = 0; i < lifeForm.length; i++){
-            // If it isn't dead...
-            if(!lifeForm[i].dead){
-                // If it can see well enough
-                if(lifeForm[i].sense.sight > 3){
-                    // Minus 7 health points
-                    var newHealth = lifeForm[i].health - 7;
-                    var lifeFormArray = lifeForm.slice();
-                    lifeFormArray[i].health = newHealth;
-                    lifeFormArray[i].image = 0;
-                    if(creature === "herbie"){
-                        if(newHealth > 2000){
-                            lifeFormArray[i].size = creatureMaxSize;
-                        }
-                        else if(newHealth > 400) {
-                            lifeFormArray[i].size = newHealth/20;
-                        }
-                        else{
-                            lifeFormArray[i].size = creatureMinSize;
-                        }
-                    } else if(creature === "carnie"){
-                        if(newHealth > 5000){
-                            lifeFormArray[i].size = creatureMaxSize;
-                        }
-                        else if(newHealth > 1000) {
-                            lifeFormArray[i].size = newHealth/50;
-                        }
-                        else{
-                            lifeFormArray[i].size = creatureMinSize;
-                        }
-                    }
-                    
-                    // Update the health of that creature
-                    if(creature === "herbie"){
-                        this.setState({
-                            herbies: lifeFormArray
-                        });
-                    } else if(creature === "carnie"){
-                        this.setState({
-                            carnies: lifeFormArray
-                        });
-                    }
-                    
-                    // If health drops below 0, the creature dies
-                    if(lifeForm[i].health <= 0){
-                        this.die(creature, i);
-                    }
-                    // If health is still above 0...
-                    else {
-                        var topDirection, leftDirection;
-                        // If the creature has a target locked...
-                        if(lifeForm[i].target){
-                            var theTarget = undefined;
-                            // Set theTarget equal to the object of whatever it is targeting
-                            for(var a = 0; a < food.length; a++){
-                                if(food[a].key === lifeForm[i].target){
-                                    theTarget = food[a];  
-                                }
-                            }
-                            // If that target still exists (and hasn't been eaten or decayed to nothing)
-                            if(theTarget){
-                                // Set difference between top positions of creature and food to topDifference
-                                var topDifference = lifeForm[i].position.top - theTarget.position.top;
-                                // Set difference between left positions of creature and food to leftDifference
-                                var leftDifference = lifeForm[i].position.left - theTarget.position.left;
-
-                                var heightAsPercentage = (lifeForm[i].size * 100)/documentHeight();
-                                var widthAsPercentage = (lifeForm[i].size * 100)/documentWidth();
-
-                                // If it's on the same y-axis, no need to changein that direction.
-                                if(topDifference === 0 || Math.abs(topDifference) < lifeForm[i].speed){
-                                    topDirection = topDifference;
-                                } 
-                                // If it's below, move downwards.
-                                else if(topDifference < 0) {
-                                    topDirection = lifeForm[i].speed;
-                                } 
-                                // If it's above, move upwards.
-                                else if(topDifference > 0) {
-                                    topDirection = -(lifeForm[i].speed);
-                                }
-
-                                // If it's on the same x-axis, no need to change in that direction.
-                                if(leftDifference === 0 || Math.abs(leftDifference) < lifeForm[i].speed){
-                                    leftDirection = leftDifference;
-                                }
-                                // If it's to the right, move right.
-                                else if(leftDifference < 0) {
-                                    leftDirection = lifeForm[i].speed;
-                                }
-                                // If it's to the left, move left.
-                                else if(leftDifference > 0) {
-                                    leftDirection = -(lifeForm[i].speed);
-                                }
-                                // If with that last movement you landed on the leaf
-                                if((Math.abs(topDifference) < (heightAsPercentage/2)) && (Math.abs(leftDifference) < (widthAsPercentage/2))){
-                                    // Eat the leaf.
-                                    this.eat(creature, i);
-                                }
-                            } 
-                            // If the target no longer exists...
-                            else {
-                                // Remove the target from the creature's object
-                                lifeFormArray = lifeForm.slice();
-                                lifeFormArray[i].target = "";
-                                // And update the state accordingly.
-                                if(creature === "herbie"){
-                                    this.setState({
-                                        herbies: lifeFormArray
-                                    });
-                                } else if(creature === "carnie"){
-                                    this.setState({
-                                        carnies: lifeFormArray
-                                    });
-                                }
-                            }
-                            
-                        } 
-                        // If the creature has no target...
-                        else {
-                            // Generate random numbers
-                            topDirection = Math.floor(Math.random() * 2);
-                            leftDirection = Math.floor(Math.random() * 2);
-                            // If topDirection random number is 0, and the creature is not at the top of the board
-                            // (Or the creature is at the bottom or the board)
-                            if((topDirection < 1 && !(lifeForm[i].position.top <= 0)) || lifeForm[i].position.top >= 100) {
-                                // Move upwards.
-                                topDirection = -(lifeForm[i].speed);
-                            } 
-                            // Otherwise, if topDirection random number is 1,
-                            else {
-                                // Move downwards.
-                                topDirection = lifeForm[i].speed;
-                            }
-
-                            // If leftDirection random number is 0, and the creature is not at the absolute left of the board
-                            // (Or the creature is at the absolute right or the board)
-                            if((leftDirection < 1 && !(lifeForm[i].position.left <= 0)) || lifeForm[i].position.left >= 100) {
-                                // Move left
-                                leftDirection = -(lifeForm[i].speed);
-                            } 
-                            // Otherwise, if leftDirection random number is 1,
-                            else {
-                                // Mover right
-                                leftDirection = lifeForm[i].speed;
-                            }
-                            // Look for a target
-                            this.searchForFood(creature, i);
-                        }
-
-                        // Once direction has been decided, add movement to temporary state variable,
-                        var newTopState = lifeForm[i].position.top + topDirection;
-                        var newLeftState = lifeForm[i].position.left + leftDirection;
-                        lifeFormArray = lifeForm.slice();
-                        lifeFormArray[i].position = {top: newTopState, left: newLeftState};
-                        // Then set the states to those variables
-                        if(creature === "herbie"){
-                            this.setState({
-                                herbies: lifeFormArray
-                            });
-                        } else if(creature === "carnie"){
-                            this.setState({
-                                carnies: lifeFormArray
-                            });
-                        }
-        
-                
-                    }
-                
-                } else {
-                    // Minus 2 health points
-                    var newHealth = lifeForm[i].health - 2;
-                    var lifeFormArray = lifeForm.slice();
-                    lifeFormArray[i].health = newHealth;
-                    if(lifeFormArray[i].image === 0 || lifeFormArray[i].image === 8.75){
-                        lifeFormArray[i].image = 5;
-                    } else {
-                        lifeFormArray[i].image += 0.25;
-                    }
-                    
-
-                    if(creature === "herbie"){
-                        if(newHealth > 2000){
-                            lifeFormArray[i].size = creatureMaxSize;
-                        }
-                        else if(newHealth > 400) {
-                            lifeFormArray[i].size = newHealth/20;
-                        }
-                        else{
-                            lifeFormArray[i].size = creatureMinSize;
-                        }
-                    } else if(creature === "carnie"){
-                        if(newHealth > 5000){
-                            lifeFormArray[i].size = creatureMaxSize;
-                        }
-                        else if(newHealth > 1000) {
-                            lifeFormArray[i].size = newHealth/50;
-                        }
-                        else{
-                            lifeFormArray[i].size = creatureMinSize;
-                        }
-                    }
-
-                    // Update the health of that creature
-                    if(creature === "herbie"){
-                        this.setState({
-                            herbies: lifeFormArray
-                        });
-                    } else if(creature === "carnie"){
-                        this.setState({
-                            carnies: lifeFormArray
-                        });
-                    }
-
-                    // If health drops below 0, the creature dies
-                    if(lifeForm[i].health <= 0){
-                        this.die(creature, i);
-                    }
-                }
-            } 
-            // If the creature is dead...
-            else {
-                // Decay a bit more.
-                var death = this.decay(creature, i);
-                // If the creature is fully decayed, the creature is removed,
-                if(death){
-                    // And we exit the loop.
-                    return;
-                }
-            }
-        }
+    checkForEnemies() {
+        // Logic to be added
+        return null;
     }
 
+    defend() {
+        // Logic to be added
+    }
+    
+    escape() {
+        // Logic to be added
+    }
 
-
-    // Search for Food Logic
-    searchForFood(creature, index) {
-        // Set the lifeForm and food variables depending on the creature
-        if(creature === "herbie"){
-            var { herbies: lifeForm, leaves: food } = this.state;
-        } else if(creature === "carnie"){
-            var { carnies: lifeForm, herbies: food } = this.state;
+    searchForFood(lifeForm) {
+        var sensingDistance = Math.sqrt((Math.pow(lifeForm.sense.sight, 2)) + (Math.pow(lifeForm.sense.sight, 2)));
+        var food;
+        if(lifeForm.species === "herbie"){
+            food = this.state.leaves;
+        } else if(lifeForm.species === "carnie"){
+            food = this.state.herbies;
         }
 
-        // Total sensing range
-        var sensingDistance = Math.sqrt((Math.pow(lifeForm[index].sense.sight, 2)) + (Math.pow(lifeForm[index].sense.sight, 2)));
-        // Check through food array
+        var shortestDistance = sensingDistance;
+        var target = null;
         for(var i = 0; i < food.length; i++){
-            // Compare top distance of lifeForm and food
-            var topDistanceToFood = lifeForm[index].position.top - food[i].position.top;
-            // Compare left distance of lifeForm and food
-            var leftDistanceToFood = lifeForm[index].position.left - food[i].position.left;
-            // Figure out distance from food
+            var topDistanceToFood = lifeForm.position.top - food[i].position.top;
+            var leftDistanceToFood = lifeForm.position.left - food[i].position.left;
             var distanceToFood = Math.sqrt((Math.pow(topDistanceToFood, 2)) + (Math.pow(leftDistanceToFood, 2)));
-            // If the distance to the food is within sensing range...
-            if(distanceToFood < sensingDistance){
-                // Add the food's key to the creatures target...
-                var lifeFormArray = lifeForm.slice();
-                lifeFormArray[index].target = food[i].key;
-                // And update the state accordingly.
-                if(creature === "herbie"){
-                    this.setState({
-                        herbies: lifeFormArray
-                    });
-                } else if(creature === "carnie"){
-                    this.setState({
-                        carnies: lifeFormArray
-                    });
-                }
-                // Exit the loop
-                return;
+            
+            if(distanceToFood < shortestDistance){
+                shortestDistance = distanceToFood;
+                target = food[i];
             }
         }
+        return target;
     }
 
-    // Eating logic
-    eat(creature, index) {
-        var theTargetSpecies;
-        // Set the lifeForm, food and target species variables depending on the creature
-        if(creature === "herbie"){
-            var { herbies: eatingLifeForm, leaves: food } = this.state;
-            theTargetSpecies = "leaf";
-        } else if(creature === "carnie"){
-            var { carnies: eatingLifeForm, herbies: food } = this.state;
-            theTargetSpecies = "herbie";
+    hunt(lifeForm) {
+        // Logic to be added
+        var theTarget = lifeForm.foodTarget;
+        var targetIndex;
+        if(lifeForm.species === "herbie"){
+            targetIndex = this.state.leaves.indexOf(theTarget);
+        } else if(lifeForm.species === "carnie"){
+            targetIndex = this.state.herbies.indexOf(theTarget);
         }
 
-        var theTargetIndex;
-        var lifeFormArray = eatingLifeForm;
-        
-        // Loop through food array
-        for(var b = 0; b < food.length; b++){
-            // If the food item at current index has a key that is equal to the creatures target
-            if(food[b].key === eatingLifeForm[index].target){
-                // Set theTargetIndex to current index
-                theTargetIndex = b;
-                // Add the available nutrition to the creature
-                var newHealth = food[theTargetIndex].nutrition;
-                lifeFormArray[index].health += newHealth;
-                
-                // And remove the target from it's array
-                this.remove(theTargetSpecies, theTargetIndex);
+        if(targetIndex !== -1){
+            var topDirection, leftDirection;
+            //Set difference between top positions of creature and food to topDifference
+            var topDifference = lifeForm.position.top - theTarget.position.top;
+            // Set difference between left positions of creature and food to leftDifference
+            var leftDifference = lifeForm.position.left - theTarget.position.left;
+
+            var heightAsPercentage = (lifeForm.size * 100)/documentHeight();
+            var widthAsPercentage = (lifeForm.size * 100)/documentWidth();
+
+            // If it's on the same y-axis, no need to changein that direction.
+            if(topDifference === 0 || Math.abs(topDifference) < lifeForm.speed){
+                topDirection = topDifference;
             } 
+            // If it's below, move downwards.
+            else if(topDifference < 0) {
+                topDirection = lifeForm.speed;
+            } 
+            // If it's above, move upwards.
+            else if(topDifference > 0) {
+                topDirection = -(lifeForm.speed);
+            }
+
+            // If it's on the same x-axis, no need to change in that direction.
+            if(leftDifference === 0 || Math.abs(leftDifference) < lifeForm.speed){
+                leftDirection = leftDifference;
+            }
+            // If it's to the right, move right.
+            else if(leftDifference < 0) {
+                leftDirection = lifeForm.speed;
+            }
+            // If it's to the left, move left.
+            else if(leftDifference > 0) {
+                leftDirection = -(lifeForm.speed);
+            }
+
+            var newTopState = lifeForm.position.top + topDirection;
+            var newLeftState = lifeForm.position.left + leftDirection;
+            
+            lifeForm.position = {top: newTopState, left: newLeftState};
+
+            // If with that last movement you landed on the target
+            if((Math.abs(topDifference) < (heightAsPercentage/2)) && (Math.abs(leftDifference) < (widthAsPercentage/2))){
+                // Eat it.
+                this.eat(lifeForm);
+            }
+        } else {
+            lifeForm.foodTarget = null;
         }
 
-        // Reset the creature's target
-        lifeFormArray[index].target = "";
-        if(creature === "herbie"){
-            this.setState({
-                herbies: lifeFormArray,
-            });
-        } else if(creature === "carnie"){
-            this.setState({
-                carnies: lifeFormArray,
-            });
+        return {
+            lifeForm: lifeForm,
+            toRemove: false
         }
     }
 
-    die(creature, i) {
-        // Set the lifeForm variable depending on the creature
-        if(creature === "herbie"){
-            var { herbies: lifeForm } = this.state;
-        } else if(creature === "carnie"){
-            var { carnies: lifeForm } = this.state;
+    eat(lifeForm) {
+        var target;
+        // Set the lifeForm, food and target species variables depending on the creature
+        if(lifeForm.species === "herbie"){
+            target = this.state.leaves;
+        } else if(lifeForm.species === "carnie"){
+            target = this.state.herbies;
+        }
+        
+        var targetIndex = target.indexOf(lifeForm.foodTarget);
+        this.digest(lifeForm, targetIndex);
+        
+        lifeForm.health += lifeForm.foodTarget.nutrition;
+        lifeForm.foodTarget = null;
+
+    }
+
+    digest(lifeForm, index){
+        if(lifeForm.species === "carnie"){
+            var copyHerbies = this.state.herbies.slice();
+            console.log(copyHerbies);
+            copyHerbies.splice(index, 1);
+            this.setState({
+                herbies: copyHerbies
+            });
+        } else if(lifeForm.species === "herbie"){
+            var copyLeaves = this.state.leaves.slice();
+            copyLeaves.splice(index, 1);
+            this.setState({
+                leaves: copyLeaves
+            });
+        } 
+    }
+
+    searchForMate() {
+        // Logic to be added
+        return null;
+    }
+
+    trackMate() {
+        // Logic to be added
+    }
+
+    mate() {
+        // Logic to be added
+    }
+    
+    moveRandomly(lifeForm){
+        var topDirection = Math.floor(Math.random() * 2);
+        var leftDirection = Math.floor(Math.random() * 2);
+        // If topDirection random number is 0, and the creature is not at the top of the board
+        // (Or the creature is at the bottom or the board)
+        if((topDirection < 1 && !(lifeForm.position.top <= lifeForm.speed)) || lifeForm.position.top >= (100 - lifeForm.speed)) {
+            topDirection = -(lifeForm.speed); // Move upwards.
+        } else { // Otherwise, if topDirection random number is 1,
+            topDirection = lifeForm.speed; // Move downwards.
         }
 
-        // Update the dead variable of the creature to true
-        var lifeFormArray = lifeForm.slice();
-        lifeFormArray[i].dead = true;
-        if(creature === "herbie"){
-            this.setState({
-                herbies: lifeFormArray
-            });
-        } else if(creature === "carnie"){
-            this.setState({
-                carnies: lifeFormArray
-            });
+        // If leftDirection random number is 0, and the creature is not at the absolute left of the board
+        // (Or the creature is at the absolute right or the board)
+        if((leftDirection < 1 && !(lifeForm.position.left <= lifeForm.speed)) || lifeForm.position.left >= (100 - lifeForm.speed)) {
+            leftDirection = -(lifeForm.speed); // Move left
+        } else { // Otherwise, if leftDirection random number is 1,
+            leftDirection = lifeForm.speed; // Move right
+        }
+
+        var newTopState = lifeForm.position.top + topDirection;
+        var newLeftState = lifeForm.position.left + leftDirection;
+        
+        lifeForm.position = {top: newTopState, left: newLeftState};
+
+        return {
+            lifeForm: lifeForm,
+            toRemove: false
         }
     }
 
-    decay(creature, i) {
-        // Set the lifeForm variable depending on the creature
-        if(creature === "herbie"){
-            var { herbies: lifeForm } = this.state;
-        } else if(creature === "carnie"){
-            var { carnies: lifeForm } = this.state;
-        }
-        
-        // Change the image (every other run through) and take away some nutrition
-        var lifeFormArray = lifeForm.slice();
-        if(lifeFormArray[i].image >= 5){
-            lifeFormArray[i].image = 0;
-        }
-        lifeFormArray[i].image += 0.5;
-        lifeFormArray[i].nutrition -= 50;
-        
-        // If the creature has cycled through all decay images
-        if(lifeFormArray[i].image > 4.5){
-            // Remove the creature from it's array and leave the function
-            this.remove(creature, i);
-            return true;
+    sleep(lifeForm) {
+        if(lifeForm.image === 0 || lifeForm.image === 8.75){
+            lifeForm.image = 5;
+        } else {
+            lifeForm.image += 0.25;
         }
 
-        // If the creature has not finished the decaying process...
-        else {
-            // Applied the updated values of image and nutrition
-            if(creature === "herbie"){
-                this.setState({
-                    herbies: lifeFormArray
-                });
-            } else if(creature === "carnie"){
-                this.setState({
-                    carnies: lifeFormArray
-                });
-            }
+        return {
+            lifeForm: lifeForm,
+            toRemove: false
         }
-        
     }
 
-    remove(creature, i) {
-        // Set the lifeForm variable depending on the creature
-        if(creature === "herbie"){
-            var { herbies: lifeForm } = this.state;
-        } else if(creature === "carnie"){
-            var { carnies: lifeForm } = this.state;
-        } else if(creature === "leaf"){
-            var { leaves: lifeForm } = this.state;
+    decay(lifeForm) {
+        var toRemove = false;
+        if(lifeForm.image >= 5){
+            lifeForm.image = 0.5;
+        } else if(lifeForm.image < 4.5){
+            lifeForm.image += 0.5;
+        } else if(lifeForm.image === 4.5){
+            toRemove = true;
         }
 
-        // Remove that creature from a copy of the array
-        var lifeFormArray = lifeForm.slice();
-        lifeFormArray.splice(i, 1);
-
-        // Update the state accordingly
-        if(creature === "herbie"){
-            this.setState({
-                herbies: lifeFormArray
-            });
-            // If the last herbie has just been removed, stop the process for moving herbies
-            if(this.state.herbies.length < 1){
-                clearInterval(this.startHerbie);
+        return {
+            lifeForm: lifeForm,
+            toRemove: toRemove
+        }
+    }
+    
+    remove(array, removals) {
+        removals.reverse();
+        for(var i = 0; i < removals.length; i++){
+            for(var j = 0; j < array.length; j++){
+                if(removals[i] === j){
+                    array.splice(j, 1);
+                }
             }
-        } else if(creature === "carnie"){
-            this.setState({
-                carnies: lifeFormArray
-            });
-            // If the last carnie has just been removed, stop the process for moving carnies
-            if(this.state.carnies.length < 1){
-                clearInterval(this.startCarnie);
-            }
-        } else if(creature === "leaf"){
-            this.setState({
-                leaves: lifeFormArray
-            });
         }
-
-        if(this.state.herbies.length < 1 && this.state.carnies.length < 1){
-            this.resetGame();
-            var button = document.getElementById("startButton");
-            button.style.display = "initial";
-        }
+        return array;
     }
 
     // When start button is pressed
     handleClick(){
-        // Start the game, get the creatures moving
+        // Reset Game
+        this.resetGame();
+        // Start the game
         this.startGame();
-        this.startHerbie = setInterval(
-            () => this.move("herbie"), 100
-        );
-        this.startCarnie = setInterval(
-            () => this.move("carnie"), 100
-        );
         // And hide the button
         var button = document.getElementById("startButton");
         button.style.display = "none";

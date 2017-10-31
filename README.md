@@ -42,4 +42,6 @@ Next Change to Make
     (T0015) Carnies should damage herbies before eating them entirely.
 
 31/10/17:
-    (T0016) Refactor Movement Code
+    <!-- (T0016) Refactor All Code (31/10/17) -->
+        ISSUES:
+            (I0009) Herbies not being removed when carnies eat them.
