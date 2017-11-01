@@ -4,8 +4,8 @@ import Carnie from './carnie.js';
 import Leaf from './leaf.js';
 import Background from './background.js';
 
-const creatureMinSize = 20;
-const creatureMaxSize = 100;
+const creatureMinSize = 15;
+const creatureMaxSize = 35;
 
 function documentHeight() {
     return Math.max(
@@ -85,7 +85,7 @@ export default class Life extends React.Component {
                 top: top,
                 left: left
             },
-            nutrition: 200,
+            nutrition: 50,
             species: "leaf"
         };
 
@@ -107,8 +107,8 @@ export default class Life extends React.Component {
         var randomSight = Math.floor(Math.random() * 10) + 10;
         var sightLoss = (randomSight*7.5)/100;
         var randomSpeed = Math.floor(Math.random() * 2)+ 1;
-        var startingNutrition = startingSize * 50;
-        var startingHealth = startingSize * 20;
+        var startingNutrition = startingSize * 10;
+        var startingHealth = startingNutrition;
 
         // Create new herbie object with random stats
         var newHerbie = {
@@ -150,8 +150,8 @@ export default class Life extends React.Component {
         var randomSight = Math.floor(Math.random() * 10) + 10;
         var sightLoss = (randomSight*7.5)/100;
         var randomSpeed = Math.floor(Math.random() * 2)+ 1;
-        var startingNutrition = startingSize * 50;
-        var startingHealth = startingSize * 50;
+        var startingNutrition = startingSize * 20;
+        var startingHealth = startingNutrition;
 
         // Create new carnie object with random stats
         var newCarnie = {
@@ -301,7 +301,7 @@ export default class Life extends React.Component {
             herbies: newHerbiesArray,
             carnies: newCarniesArray,
             leaves: newLeavesArray
-        })
+        });
 
         if(this.state.herbies.length < 1 && this.state.carnies.length < 1){
             this.endGame();
@@ -313,7 +313,7 @@ export default class Life extends React.Component {
         if(!lifeForm.dead){
             if(lifeForm.sense.sight > 3){
                 lifeForm.image = 0;
-                lifeForm.health -= 7;
+                lifeForm.health -= 4;
                 if(lifeForm.activePredator){
                     console.log(lifeForm.species + " is running away!!!");
                     decision = this.escape(lifeForm);
@@ -336,7 +336,7 @@ export default class Life extends React.Component {
                     
                 }
             } else{
-                lifeForm.health -= 2;
+                lifeForm.health -= 1;
                 decision = this.sleep(lifeForm);
             }
             if(lifeForm.health <= 0){
@@ -475,7 +475,7 @@ export default class Life extends React.Component {
             if((Math.abs(topDifference) < (heightAsPercentage/2)) && (Math.abs(leftDifference) < (widthAsPercentage/2))){
                 // Eat it.
                 toEat = targetIndex;
-                lifeForm.health = theTarget.nutrition;
+                lifeForm.health += theTarget.nutrition;
                 lifeForm.foodTarget = null;
             }
         } else {

@@ -46,4 +46,8 @@ Next Change to Make
         ISSUES:
             <!-- (I0009) Herbies not being removed when carnies eat them. (31/10/17) -->
             <!-- (I0010) Leaves not disappearing on reset. (01/11/17) -->
-            (I0011) Creatures not growing as they eat
+            <!-- (I0011) Creatures not growing as they eat (01/11/17)
+                SOLUTION: Was setting health = nutrition instead of health += nutrition -->
+            
+01/11/17
+    (I0012) Food randomly disappears when other food is eaten.
