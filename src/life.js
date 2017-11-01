@@ -3,6 +3,7 @@ import Herbie from './herbie.js';
 import Carnie from './carnie.js';
 import Leaf from './leaf.js';
 import Background from './background.js';
+import Leaderboard from './leaderboard.js';
 
 const creatureMinSize = 15;
 const creatureMaxSize = 35;
