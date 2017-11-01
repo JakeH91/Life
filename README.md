@@ -33,8 +33,6 @@ Next Change to Make
     <!-- (T0011) Fade seamlessly between decay images (instead of clunky changes) (30/10/17) -->
     <!-- (T0012) If sight is below a certain level, creatures should preserve energy (sleep) (30/10/17) -->
     <!-- (T0013) Carnies should be able to start eating herbies if there are touching at all, not just if there centres are equal (30/10/17) -->
-        ISSUES:
-            (I0008) The edge of the creature still has to touch the center of it's food... Maybe that's fine, I need to think about it.
 
 30/10/17:
     <!-- (T0014) Creatures should start small, then grow as they eat (Size proportional to health). (30/10/17) -->
@@ -53,3 +51,5 @@ Next Change to Make
             SOLUTION: Sort toEat array before removing, so it removes from the top down, not changing the index of               others as it goes. -->
     <!-- (I0013) Strange pauses in movement, possibly due to loops having to finish looping before action takes place.      (01/11/17) -->
     (T0017) Creatures should gain defence as they grow.
+    (T0018) Style leaderboard
+    (T0019) Make leaderboard collapsable(tuck into the side, with button to draw out/put in again)
