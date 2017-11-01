@@ -52,4 +52,4 @@ Next Change to Make
 01/11/17
     <!-- (I0012) Food randomly disappears when other food is eaten. (01/11/17) 
             SOLUTION: Sort toEat array before removing, so it removes from the top down, not changing the index of               others as it goes. -->
-    (I0013) Strange pauses in movement, possibly due to loops having to finish looping before action takes place.
+    <!-- (I0013) Strange pauses in movement, possibly due to loops having to finish looping before action takes place.      (01/11/17) -->

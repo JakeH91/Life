@@ -271,33 +271,34 @@ export default class Life extends React.Component {
             } else { // Otherwise
                 copyHerbies[i] = tempHerbiesObject.lifeForm; // Update this herbie's attributes
             }
-            if(tempHerbiesObject.toEat){
+            if(tempHerbiesObject.toEat !== -1){
                 leafRemovals.push(tempHerbiesObject.toEat);
             }
         }
 
-        function findLeafIndex(food) {
-            for(var i = 0; i < copyLeaves.length; i++){
-                if(copyLeaves[i].key === food){
-                    food = i;
-                }
-            } 
-            return food;
-        }
+        // function findLeafIndex(food) {
+        //     for(var i = 0; i < copyLeaves.length; i++){
+        //         if(copyLeaves[i].key === food){
+        //             food = i;
+        //             return food;
+        //         }
+        //     } 
+        //     return food;
+        // }
 
-        function findHerbieIndex(food) {
-            for(var i = 0; i < copyHerbies.length; i++){
-                if(copyHerbies[i].key === food){
-                    food = i;
-                }
-            } 
-            return food;
-        }
+        // function findHerbieIndex(food) {
+        //     for(var i = 0; i < copyHerbies.length; i++){
+        //         if(copyHerbies[i].key === food){
+        //             food = i;
+        //         }
+        //     } 
+        //     return food;
+        // }
 
-        leafRemovals = leafRemovals.map((leaf) => {
-            // Get index of leaf within copyLeaves array
-            return findLeafIndex(leaf);
-        });
+        // leafRemovals = leafRemovals.map((leaf) => {
+        //     // Get index of leaf within copyLeaves array
+        //     return findLeafIndex(leaf);
+        // });
 
         var newLeavesArray = this.remove(copyLeaves, leafRemovals);
         var newHerbiesArray = this.remove(copyHerbies, herbieRemovals);
@@ -311,14 +312,14 @@ export default class Life extends React.Component {
             } else { // Otherwise
                 copyCarnies[j] = tempCarniesObject.lifeForm; // Update this carnie's attributes
             }
-            if(tempCarniesObject.toEat){
+            if(tempCarniesObject.toEat !== -1){
                 herbieRemovals.push(tempCarniesObject.toEat);   
             }
         }
 
-        herbieRemovals = herbieRemovals.map((herbie) => {
-            return findHerbieIndex(herbie);
-        });
+        // herbieRemovals = herbieRemovals.map((herbie) => {
+        //     return findHerbieIndex(herbie);
+        // });
 
         newHerbiesArray = this.remove(copyHerbies, herbieRemovals);
 
@@ -497,7 +498,12 @@ export default class Life extends React.Component {
             // If with that last movement you landed on the target
             if((Math.abs(topDifference) < (heightAsPercentage/2)) && (Math.abs(leftDifference) < (widthAsPercentage/2))){
                 // Eat it.
-                toEat = theTarget.key;
+                if(lifeForm.species === "herbie"){
+                    targetIndex = this.state.leaves.indexOf(theTarget);
+                } else if(lifeForm.species === "carnie"){
+                    targetIndex = this.state.herbies.indexOf(theTarget);
+                }
+                toEat = targetIndex;
                 lifeForm.health += theTarget.nutrition;
                 lifeForm.foodTarget = null;
             }
@@ -552,7 +558,7 @@ export default class Life extends React.Component {
         return {
             lifeForm: lifeForm,
             toRemove: false,
-            toEat: ""
+            toEat: -1
         }
     }
 
@@ -566,7 +572,7 @@ export default class Life extends React.Component {
         return {
             lifeForm: lifeForm,
             toRemove: false,
-            toEat: ""
+            toEat: -1
         }
     }
 
@@ -583,7 +589,7 @@ export default class Life extends React.Component {
         return {
             lifeForm: lifeForm,
             toRemove: toRemove,
-            toEat: ""
+            toEat: -1
         }
     }
     
