@@ -271,10 +271,33 @@ export default class Life extends React.Component {
             } else { // Otherwise
                 copyHerbies[i] = tempHerbiesObject.lifeForm; // Update this herbie's attributes
             }
-            if(tempHerbiesObject.toEat !== -1){
+            if(tempHerbiesObject.toEat){
                 leafRemovals.push(tempHerbiesObject.toEat);
             }
         }
+
+        function findLeafIndex(food) {
+            for(var i = 0; i < copyLeaves.length; i++){
+                if(copyLeaves[i].key === food){
+                    food = i;
+                }
+            } 
+            return food;
+        }
+
+        function findHerbieIndex(food) {
+            for(var i = 0; i < copyHerbies.length; i++){
+                if(copyHerbies[i].key === food){
+                    food = i;
+                }
+            } 
+            return food;
+        }
+
+        leafRemovals = leafRemovals.map((leaf) => {
+            // Get index of leaf within copyLeaves array
+            return findLeafIndex(leaf);
+        });
 
         var newLeavesArray = this.remove(copyLeaves, leafRemovals);
         var newHerbiesArray = this.remove(copyHerbies, herbieRemovals);
@@ -288,10 +311,15 @@ export default class Life extends React.Component {
             } else { // Otherwise
                 copyCarnies[j] = tempCarniesObject.lifeForm; // Update this carnie's attributes
             }
-            if(tempCarniesObject.toEat !== -1){
+            if(tempCarniesObject.toEat){
                 herbieRemovals.push(tempCarniesObject.toEat);   
             }
         }
+
+        herbieRemovals = herbieRemovals.map((herbie) => {
+            return findHerbieIndex(herbie);
+        });
+
         newHerbiesArray = this.remove(copyHerbies, herbieRemovals);
 
         // Return arrays with any fully decayed creatures removed
@@ -424,13 +452,8 @@ export default class Life extends React.Component {
         // Logic to be added
         var theTarget = lifeForm.foodTarget;
         var targetIndex;
-        if(lifeForm.species === "herbie"){
-            targetIndex = this.state.leaves.indexOf(theTarget);
-        } else if(lifeForm.species === "carnie"){
-            targetIndex = this.state.herbies.indexOf(theTarget);
-        }
 
-        if(targetIndex !== -1){
+        if(theTarget){
             var topDirection, leftDirection;
             //Set difference between top positions of creature and food to topDifference
             var topDifference = lifeForm.position.top - theTarget.position.top;
@@ -470,11 +493,11 @@ export default class Life extends React.Component {
             var newLeftState = lifeForm.position.left + leftDirection;
             
             lifeForm.position = {top: newTopState, left: newLeftState};
-            var toEat = -1;
+            var toEat = "";
             // If with that last movement you landed on the target
             if((Math.abs(topDifference) < (heightAsPercentage/2)) && (Math.abs(leftDifference) < (widthAsPercentage/2))){
                 // Eat it.
-                toEat = targetIndex;
+                toEat = theTarget.key;
                 lifeForm.health += theTarget.nutrition;
                 lifeForm.foodTarget = null;
             }
@@ -529,7 +552,7 @@ export default class Life extends React.Component {
         return {
             lifeForm: lifeForm,
             toRemove: false,
-            toEat: -1
+            toEat: ""
         }
     }
 
@@ -543,7 +566,7 @@ export default class Life extends React.Component {
         return {
             lifeForm: lifeForm,
             toRemove: false,
-            toEat: -1
+            toEat: ""
         }
     }
 
@@ -560,12 +583,12 @@ export default class Life extends React.Component {
         return {
             lifeForm: lifeForm,
             toRemove: toRemove,
-            toEat: -1
+            toEat: ""
         }
     }
     
     remove(array, removals) {
-        removals.reverse();
+        removals.sort(function(a, b){return b-a});
         for(var i = 0; i < removals.length; i++){
             for(var j = 0; j < array.length; j++){
                 if(removals[i] === j){
