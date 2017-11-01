@@ -4,8 +4,8 @@ import Carnie from './carnie.js';
 import Leaf from './leaf.js';
 import Background from './background.js';
 
-var creatureMinSize = 20;
-var creatureMaxSize = 100;
+const creatureMinSize = 20;
+const creatureMaxSize = 100;
 
 function documentHeight() {
     return Math.max(
@@ -31,16 +31,20 @@ export default class Life extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
+        this.state = this.getInitialState();
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    getInitialState() {
+        const initialState = {
             // Time since beginning
             timeElapsed: 0,
             // Initialize lifeform arrays
             herbies: [],
             carnies: [],
             leaves: []
-        }
-
-        this.handleClick = this.handleClick.bind(this);
+        };
+        return initialState;
     }
 
     // Initialize game
@@ -62,19 +66,11 @@ export default class Life extends React.Component {
     }
 
     endGame() {
+        this.setState(this.getInitialState());
         clearInterval(this.timeInterval);
         clearInterval(this.movementInterval);
         var button = document.getElementById("startButton");
         button.style.display = "initial";
-    }
-
-    resetGame() {
-        this.setState({
-            timeElapsed: 0,
-            herbies: [],
-            carnies: [],
-            leaves: []
-        });
     }
 
     generateLeaf(i) {
@@ -582,9 +578,6 @@ export default class Life extends React.Component {
 
     // When start button is pressed
     handleClick(){
-        // Reset Game
-        this.resetGame();
-        // Start the game
         this.startGame();
         // And hide the button
         var button = document.getElementById("startButton");
