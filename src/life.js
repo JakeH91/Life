@@ -618,6 +618,7 @@ export default class Life extends React.Component {
                     <Leaf top={leaf.position.top} left={leaf.position.left} key={leaf.key} />
                 )}
                 <Background time={this.state.timeElapsed} />
+                <Leaderboard carnies={this.state.carnies} herbies={this.state.herbies} />
             </div>
             
         );

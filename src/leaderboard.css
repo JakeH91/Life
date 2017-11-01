@@ -1,0 +1,7 @@
+table {
+    width: 240px;
+}
+
+tr:nth-child(even) {
+    background-color: rgba(1, 1, 1, 0.1)
+}
