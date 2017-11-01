@@ -276,30 +276,6 @@ export default class Life extends React.Component {
             }
         }
 
-        // function findLeafIndex(food) {
-        //     for(var i = 0; i < copyLeaves.length; i++){
-        //         if(copyLeaves[i].key === food){
-        //             food = i;
-        //             return food;
-        //         }
-        //     } 
-        //     return food;
-        // }
-
-        // function findHerbieIndex(food) {
-        //     for(var i = 0; i < copyHerbies.length; i++){
-        //         if(copyHerbies[i].key === food){
-        //             food = i;
-        //         }
-        //     } 
-        //     return food;
-        // }
-
-        // leafRemovals = leafRemovals.map((leaf) => {
-        //     // Get index of leaf within copyLeaves array
-        //     return findLeafIndex(leaf);
-        // });
-
         var newLeavesArray = this.remove(copyLeaves, leafRemovals);
         var newHerbiesArray = this.remove(copyHerbies, herbieRemovals);
         copyHerbies = newHerbiesArray.slice();
@@ -316,10 +292,6 @@ export default class Life extends React.Component {
                 herbieRemovals.push(tempCarniesObject.toEat);   
             }
         }
-
-        // herbieRemovals = herbieRemovals.map((herbie) => {
-        //     return findHerbieIndex(herbie);
-        // });
 
         newHerbiesArray = this.remove(copyHerbies, herbieRemovals);
 
