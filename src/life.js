@@ -107,8 +107,8 @@ export default class Life extends React.Component {
         var randomSight = Math.floor(Math.random() * 10) + 10;
         var sightLoss = (randomSight*7.5)/100;
         var randomSpeed = Math.floor(Math.random() * 2)+ 1;
-        var startingNutrition = startingSize * 10;
-        var startingHealth = startingNutrition;
+        var startingHealth = startingSize * 10;
+        var startingNutrition = startingHealth + 100;
 
         // Create new herbie object with random stats
         var newHerbie = {
@@ -150,8 +150,8 @@ export default class Life extends React.Component {
         var randomSight = Math.floor(Math.random() * 10) + 10;
         var sightLoss = (randomSight*7.5)/100;
         var randomSpeed = Math.floor(Math.random() * 2)+ 1;
-        var startingNutrition = startingSize * 20;
-        var startingHealth = startingNutrition;
+        var startingHealth = startingSize * 20;
+        var startingNutrition = startingHealth + 100;
 
         // Create new carnie object with random stats
         var newCarnie = {
@@ -315,6 +315,7 @@ export default class Life extends React.Component {
             if(lifeForm.sense.sight > 3){
                 lifeForm.image = 0;
                 lifeForm.health -= 4;
+                lifeForm.nutrition -= 4;
                 if(lifeForm.activePredator){
                     console.log(lifeForm.species + " is running away!!!");
                     decision = this.escape(lifeForm);
@@ -338,6 +339,7 @@ export default class Life extends React.Component {
                 }
             } else{
                 lifeForm.health -= 1;
+                lifeForm.nutrition -= 1;
                 decision = this.sleep(lifeForm);
             }
             if(lifeForm.health <= 0){
@@ -477,6 +479,7 @@ export default class Life extends React.Component {
                 }
                 toEat = targetIndex;
                 lifeForm.health += theTarget.nutrition;
+                lifeForm.nutrition += theTarget.nutrition;
                 lifeForm.foodTarget = null;
             }
         } else {
@@ -557,6 +560,8 @@ export default class Life extends React.Component {
         } else if(lifeForm.image === 4.5){
             toRemove = true;
         }
+
+        lifeForm.nutrition -= 30;
 
         return {
             lifeForm: lifeForm,
