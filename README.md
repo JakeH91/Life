@@ -52,7 +52,7 @@ Next Change to Make
     <!-- (I0013) Strange pauses in movement, possibly due to loops having to finish looping before action takes place.      (01/11/17) -->
     (T0017) Creatures should gain defence as they grow.
     <!-- (T0018) Style leaderboard (hide before game start, show during game) (03/11/17) -->
-    (T0019) Make leaderboard collapsable(tuck into the side, with button (or hover maybe?) to draw out/put in again)
+    <!-- (T0019) Make leaderboard collapsable(tuck into the side, with button (or hover maybe?) to draw out/put in again) (03/11/17) -->
     (T0020) Final scoreboard should appear at end, with following stats:
         (T0020a) Amount of food eaten
         (T0020b) Age

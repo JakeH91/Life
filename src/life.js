@@ -77,6 +77,8 @@ export default class Life extends React.Component {
         clearInterval(this.movementInterval);
         var button = document.getElementById("startButton");
         button.style.display = "initial";
+        var leaderBoard = document.getElementById("leaderBoard");
+        leaderBoard.style.display = "none";
     }
 
     generateLeaf() {
