@@ -7,6 +7,11 @@ import Leaderboard from './leaderboard.js';
 
 const creatureMinSize = 15;
 const creatureMaxSize = 35;
+var totalLifeForms = {
+    herbies: 0,
+    carnies: 0,
+    leaves: 0
+};
 
 function documentHeight() {
     return Math.max(
@@ -52,13 +57,13 @@ export default class Life extends React.Component {
     startGame() {
         // Generate life forms according to props
         for(var i = 0; i < this.props.numLeaves; i++) {
-            this.generateLeaf(i);
+            this.generateLeaf();
         }
         for(var j = 0; j < this.props.numHerbies; j++) {
-            this.generateHerbie(j);
+            this.generateHerbie();
         }
         for(var k = 0; k < this.props.numCarnies; k++) {
-            this.generateCarnie(k);
+            this.generateCarnie();
         }
         // Start the flow of time
         this.timeInterval = setInterval(() => this.updateTime(), 1000);
@@ -74,21 +79,24 @@ export default class Life extends React.Component {
         button.style.display = "initial";
     }
 
-    generateLeaf(i) {
+    generateLeaf() {
         // Get random coordinates
         var top = Math.floor(Math.random() * 100);
         var left = Math.floor(Math.random() * 100);
-        
         // Create new leaf object with random coordinates
         var newLeaf = { 
-            key: "leaf" + i,
+            key: "leaf" + totalLifeForms.leaves,
             position: {
                 top: top,
                 left: left
             },
+            health: 50,
             nutrition: 50,
+            defence: 0,
             species: "leaf"
         };
+
+        totalLifeForms.leaves++;
 
         // Copy the leaves array and push the new leaf to the end of that array
         var leavesArray = this.state.leaves;
@@ -100,7 +108,7 @@ export default class Life extends React.Component {
         });
     }
 
-    generateHerbie(i) {
+    generateHerbie() {
         // Randomly generate stats
         var top = Math.floor(Math.random() * 100);
         var left = Math.floor(Math.random() * 100);
@@ -110,10 +118,10 @@ export default class Life extends React.Component {
         var randomSpeed = Math.floor(Math.random() * 2)+ 1;
         var startingHealth = startingSize * 10;
         var startingNutrition = startingHealth + 100;
-
         // Create new herbie object with random stats
+        
         var newHerbie = {
-            key: "herbie" + i,
+            key: "herbie" + totalLifeForms.herbies,
             position: { top: top, left: left },
             size: startingSize,
             species: "herbie",
@@ -136,6 +144,7 @@ export default class Life extends React.Component {
         // Copy the herbies array and push the new herbie to the end of that array
         var herbiesArray = this.state.herbies;
         herbiesArray.push(newHerbie);
+        totalLifeForms.herbies++;
 
         // Set the state to the altered, copied array
         this.setState({
@@ -143,7 +152,7 @@ export default class Life extends React.Component {
         });
     }
 
-    generateCarnie(i) {
+    generateCarnie() {
         // Randomly generate stats
         var top = Math.floor(Math.random() * 100);
         var left = Math.floor(Math.random() * 100);
@@ -154,9 +163,9 @@ export default class Life extends React.Component {
         var startingHealth = startingSize * 20;
         var startingNutrition = startingHealth + 100;
 
-        // Create new carnie object with random stats
+        // Create new carnie object with random stats   
         var newCarnie = {
-            key: "carnie" + i,
+            key: "carnie" + totalLifeForms.carnies,
             position: { top: top, left: left },
             size: startingSize,
             species: "carnie",
@@ -179,6 +188,7 @@ export default class Life extends React.Component {
         // Copy the carnies array and push the new carnie to the end of that array
         var carniesArray = this.state.carnies;
         carniesArray.push(newCarnie);
+        totalLifeForms.carnies++;
 
         // Set the state to the altered, copied array
         this.setState({
@@ -472,16 +482,27 @@ export default class Life extends React.Component {
             var toEat = "";
             // If with that last movement you landed on the target
             if((Math.abs(topDifference) < (heightAsPercentage/2)) && (Math.abs(leftDifference) < (widthAsPercentage/2))){
-                // Eat it.
+                // Damage it.
                 if(lifeForm.species === "herbie"){
                     targetIndex = this.state.leaves.indexOf(theTarget);
                 } else if(lifeForm.species === "carnie"){
                     targetIndex = this.state.herbies.indexOf(theTarget);
                 }
-                toEat = targetIndex;
-                lifeForm.health += theTarget.nutrition;
-                lifeForm.nutrition += theTarget.nutrition;
-                lifeForm.foodTarget = null;
+
+                theTarget.health -= 50;
+                theTarget.nutrition -= 50;
+                lifeForm.health += 50;
+                lifeForm.nutrition += 50;
+                
+
+                if(theTarget.health <= 0){
+                    toEat = targetIndex;
+                    lifeForm.foodTarget = null;
+                    lifeForm.health += theTarget.nutrition;
+                    lifeForm.nutrition += theTarget.nutrition;
+                }
+                
+                
             }
         } else {
             lifeForm.foodTarget = null;

@@ -26,8 +26,7 @@ export default class Leaderboard extends React.Component{
             width: 60,
             height: 20
         }
-
-        console.log(creaturesArray);
+        
         return(
             <table style={boardStyle}>
                 <thead>
