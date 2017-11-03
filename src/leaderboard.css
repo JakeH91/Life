@@ -1,5 +1,6 @@
 table {
     width: 240px;
+    display: none;
 }
 
 tr:nth-child(even) {

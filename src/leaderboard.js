@@ -26,9 +26,9 @@ export default class Leaderboard extends React.Component{
             width: 60,
             height: 20
         }
-        
+
         return(
-            <table style={boardStyle}>
+            <table id="leaderBoard" style={boardStyle}>
                 <thead>
                     <tr>
                         <th>Name</th> 

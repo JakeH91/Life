@@ -610,6 +610,8 @@ export default class Life extends React.Component {
         // And hide the button
         var button = document.getElementById("startButton");
         button.style.display = "none";
+        var leaderBoard = document.getElementById("leaderBoard");
+        leaderBoard.style.display = "inline-block";
     }
 
     render() {
