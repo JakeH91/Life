@@ -68,7 +68,7 @@ export default class Life extends React.Component {
         // Start the flow of time
         this.timeInterval = setInterval(() => this.updateTime(), 1000);
         
-        this.movementInterval = setInterval(() => this.updateGame(), 100);
+        this.movementInterval = setInterval(() => this.updateGame(), 500);
     }
 
     endGame() {
@@ -92,10 +92,11 @@ export default class Life extends React.Component {
                 top: top,
                 left: left
             },
-            health: 50,
-            nutrition: 50,
+            health: 100,
+            nutrition: 100,
             defence: 0,
-            species: "leaf"
+            species: "leaf",
+            activePredator: null
         };
 
         totalLifeForms.leaves++;
@@ -135,6 +136,7 @@ export default class Life extends React.Component {
             speed: randomSpeed,
             nutrition: startingNutrition,
             health: startingHealth,
+            defence: 0,
             foodTarget: null,
             pregnant: false,
             mateTarget: null,
@@ -179,6 +181,7 @@ export default class Life extends React.Component {
             speed: randomSpeed,
             nutrition: startingNutrition,
             health: startingHealth,
+            attack: 0,
             foodTarget: null,
             pregnant: false,
             mateTarget: null,
@@ -323,6 +326,7 @@ export default class Life extends React.Component {
     }
 
     decide(lifeForm) {
+        var foodIndex = -1;
         var decision;
         if(!lifeForm.dead){
             if(lifeForm.sense.sight > 3){
@@ -330,7 +334,6 @@ export default class Life extends React.Component {
                 lifeForm.health -= 4;
                 lifeForm.nutrition -= 4;
                 if(lifeForm.activePredator){
-                    console.log(lifeForm.species + " is running away!!!");
                     decision = this.escape(lifeForm);
                 } else if((!lifeForm.pregnant) && (lifeForm.age > 3) && this.searchForMate(lifeForm)) { // searchForFood returns true or false
                     console.log(lifeForm.species + " is following a potential mate.");
@@ -338,13 +341,20 @@ export default class Life extends React.Component {
                 } else if(lifeForm.foodTarget) { // searchForFood returns true or false
                     decision = this.hunt(lifeForm);
                 }  else {
-                    // lifeForm.activePredator = this.checkForEnemies(lifeForm);
-                    // if(!lifeForm.activePredator){
-                    //     lifeForm.foodTarget = this.searchForFood(lifeForm);
-                    //     lifeForm.mateTarget = this.searchForMate(lifeForm);
+                    lifeForm.activePredator = this.checkForEnemies(lifeForm);
+                    if(!lifeForm.activePredator){
+                        lifeForm.foodTarget = this.searchForFood(lifeForm);
+                        // lifeForm.mateTarget = this.searchForMate(lifeForm);
+                    }
+                    // var search = this.searchForFood(lifeForm);
+                    // lifeForm.foodTarget = search.target;
+                    // foodIndex = search.index;
+                    // if(search.index !== -1){
+                    //     console.log(lifeForm.key + " has set his target to " + search.target.key);
+                    // } else {
+                    //     console.log(lifeForm.key + " will need to keep searching.");
                     // }
-                    lifeForm.foodTarget = this.searchForFood(lifeForm);
-                    
+
                     decision = this.moveRandomly(lifeForm);
                     
                     
@@ -366,7 +376,7 @@ export default class Life extends React.Component {
         }
 
         if(lifeForm.species === "herbie"){
-            if(lifeForm.health > 2000){
+            if(lifeForm.health > 700){
                 lifeForm.size = creatureMaxSize;
             }
             else if(lifeForm.health > 400) {
@@ -377,7 +387,7 @@ export default class Life extends React.Component {
             }
             decision.lifeForm = lifeForm;
         } else if(lifeForm.species === "carnie"){
-            if(lifeForm.health > 2000){
+            if(lifeForm.health > 700){
                 lifeForm.size = creatureMaxSize;
             }
             else if(lifeForm.health > 400) {
@@ -393,23 +403,105 @@ export default class Life extends React.Component {
         return {
             lifeForm: decision.lifeForm,
             toRemove: decision.toRemove,
-            toEat: decision.toEat
+            toEat: decision.toEat,
+            foodIndex: foodIndex
         };
 
 
     }
     
-    checkForEnemies() {
+    checkForEnemies(lifeForm) {
         // Logic to be added
-        return null;
+        var sensingDistance = Math.sqrt((Math.pow(lifeForm.sense.sight, 2)) + (Math.pow(lifeForm.sense.sight, 2)));
+        var enemyType;
+        if(lifeForm.species === "herbie"){
+            enemyType = this.state.carnies;
+        } else if(lifeForm.species === "carnie"){
+            return null;
+        }
+
+        var shortestDistance = sensingDistance;
+        var enemy = null;
+        for(var i = 0; i < enemyType.length; i++){
+            var topDistanceToEnemy = lifeForm.position.top - enemyType[i].position.top;
+            var leftDistanceToEnemy = lifeForm.position.left - enemyType[i].position.left;
+            var distanceToEnemy = Math.sqrt((Math.pow(topDistanceToEnemy, 2)) + (Math.pow(leftDistanceToEnemy, 2)));
+            
+            if(distanceToEnemy < shortestDistance){
+                shortestDistance = distanceToEnemy;
+                enemy = enemyType[i];
+            }
+        }
+
+        
+        return enemy
     }
 
     defend() {
         // Logic to be added
     }
     
-    escape() {
+    escape(lifeForm) {
         // Logic to be added
+        var theEnemy = lifeForm.activePredator;
+        var heightAsPercentage = (lifeForm.size * 100)/documentHeight();
+        var widthAsPercentage = (lifeForm.size * 100)/documentWidth();
+        // console.log(lifeForm.key + " is running away from " + theEnemy.key);
+       
+        var topDirection = 0;
+        var leftDirection = 0;
+        //Set difference between top positions of creature and food to topDifference
+        var topDifference = lifeForm.position.top - theEnemy.position.top;
+        // Set difference between left positions of creature and food to leftDifference
+        var leftDifference = lifeForm.position.left - theEnemy.position.left;
+
+
+        // If it's on the same y-axis, choose a random direction
+        if(topDifference === 0){
+            var upOrDown = Math.floor(Math.random() * 2);
+            if(upOrDown && lifeForm.position.top > (lifeForm.speed + (heightAsPercentage/2))){
+                topDirection = -(lifeForm.speed);
+            } else if(lifeForm.position.top < (100-(lifeForm.speed + (heightAsPercentage/2)))){
+                topDirection = lifeForm.speed;
+            }
+        }
+        // If it's below, move upwards.
+        else if(topDifference < 0  && lifeForm.position.top > (lifeForm.speed + (heightAsPercentage/2))) {
+            topDirection = -(lifeForm.speed);
+        } 
+        // If it's above, move downwards.
+        else if(topDifference > 0 && lifeForm.position.top < (100-(lifeForm.speed + (heightAsPercentage/2)))){
+            topDirection = lifeForm.speed;
+        }
+
+        // If it's on the same x-axis, choose a random direction
+        if(leftDifference === 0){
+            var leftOrRight = Math.floor(Math.random() * 2);
+            if(leftOrRight && lifeForm.position.left > (lifeForm.speed + (widthAsPercentage/2))){
+                leftDirection = -(lifeForm.speed);
+            } else if(lifeForm.position.left < (100-(lifeForm.speed + (widthAsPercentage/2)))){
+                leftDirection = lifeForm.speed;
+            }
+        }
+        // If it's to the right, move left.
+        else if(leftDifference < 0  && lifeForm.position.left > (lifeForm.speed + (widthAsPercentage/2))) {
+            leftDirection = -(lifeForm.speed);
+        }
+        // If it's to the left, move right.
+        else if(leftDifference > 0 && lifeForm.position.left < (100-(lifeForm.speed + (widthAsPercentage/2)))){
+            leftDirection = lifeForm.speed;
+        }
+
+        var newTopState = lifeForm.position.top + topDirection;
+        var newLeftState = lifeForm.position.left + leftDirection;
+        
+        lifeForm.position = {top: newTopState, left: newLeftState};
+
+        return {
+            lifeForm: lifeForm,
+            toRemove: false,
+            toEat: -1
+        }
     }
 
     searchForFood(lifeForm) {
@@ -433,15 +525,17 @@ export default class Life extends React.Component {
                 target = food[i];
             }
         }
+
         return target;
     }
 
     hunt(lifeForm) {
-        // Logic to be added
         var theTarget = lifeForm.foodTarget;
         var targetIndex;
-
         if(theTarget){
+            if(lifeForm.species === "carnie"){
+                    console.log("The target's top position is " + theTarget.position.top);
+                }
             var topDirection, leftDirection;
             //Set difference between top positions of creature and food to topDifference
             var topDifference = lifeForm.position.top - theTarget.position.top;
@@ -452,28 +546,35 @@ export default class Life extends React.Component {
             var widthAsPercentage = (lifeForm.size * 100)/documentWidth();
 
             // If it's on the same y-axis, no need to changein that direction.
-            if(topDifference === 0 || Math.abs(topDifference) < lifeForm.speed){
-                topDirection = topDifference;
+            if(Math.abs(topDifference) <= lifeForm.speed){
+                
+                topDirection = -(topDifference);
             } 
             // If it's below, move downwards.
-            else if(topDifference < 0) {
+            else if(topDifference < -(lifeForm.speed)) {
                 topDirection = lifeForm.speed;
             } 
             // If it's above, move upwards.
-            else if(topDifference > 0) {
+            else if(topDifference > lifeForm.speed) {
                 topDirection = -(lifeForm.speed);
             }
+            if(lifeForm.species === "carnie"){
+                console.log(lifeForm.key + " is hunting " + theTarget.key);
+                console.log(lifeForm.key + " is " + topDifference + " away from " + theTarget.key + "'s top coordinate.");
+                console.log(lifeForm.key + " will move " + topDirection + " spaces in that direction.");
+            }
+            
 
             // If it's on the same x-axis, no need to change in that direction.
-            if(leftDifference === 0 || Math.abs(leftDifference) < lifeForm.speed){
-                leftDirection = leftDifference;
+            if(Math.abs(leftDifference) <= lifeForm.speed){
+                leftDirection = -(leftDifference);
             }
             // If it's to the right, move right.
-            else if(leftDifference < 0) {
+            else if(leftDifference < -(lifeForm.speed)) {
                 leftDirection = lifeForm.speed;
             }
             // If it's to the left, move left.
-            else if(leftDifference > 0) {
+            else if(leftDifference > lifeForm.speed) {
                 leftDirection = -(lifeForm.speed);
             }
 
@@ -481,21 +582,18 @@ export default class Life extends React.Component {
             var newLeftState = lifeForm.position.left + leftDirection;
             
             lifeForm.position = {top: newTopState, left: newLeftState};
-            var toEat = "";
-            // If with that last movement you landed on the target
-            if((Math.abs(topDifference) < (heightAsPercentage/2)) && (Math.abs(leftDifference) < (widthAsPercentage/2))){
-                // Damage it.
+            var toEat = -1;
+        
+            if(theTarget.position.top === lifeForm.position.top && theTarget.position.left === lifeForm.position.left){
                 if(lifeForm.species === "herbie"){
                     targetIndex = this.state.leaves.indexOf(theTarget);
                 } else if(lifeForm.species === "carnie"){
                     targetIndex = this.state.herbies.indexOf(theTarget);
                 }
-
-                theTarget.health -= 50;
-                theTarget.nutrition -= 50;
                 lifeForm.health += 50;
                 lifeForm.nutrition += 50;
-                
+                theTarget.health -= 50;
+                theTarget.nutrition -= 50;
 
                 if(theTarget.health <= 0){
                     toEat = targetIndex;
@@ -503,9 +601,8 @@ export default class Life extends React.Component {
                     lifeForm.health += theTarget.nutrition;
                     lifeForm.nutrition += theTarget.nutrition;
                 }
-                
-                
             }
+
         } else {
             lifeForm.foodTarget = null;
         }
