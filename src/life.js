@@ -118,7 +118,7 @@ export default class Life extends React.Component {
         var randomSight = Math.floor(Math.random() * 10) + 10;
         var sightLoss = (randomSight*7.5)/100;
         var randomSpeed = Math.floor(Math.random() * 2)+ 1;
-        var startingHealth = startingSize * 10;
+        var startingHealth = startingSize * 15;
         var startingNutrition = startingHealth + 100;
         // Create new herbie object with random stats
         
@@ -162,7 +162,7 @@ export default class Life extends React.Component {
         var randomSight = Math.floor(Math.random() * 10) + 10;
         var sightLoss = (randomSight*7.5)/100;
         var randomSpeed = Math.floor(Math.random() * 2)+ 1;
-        var startingHealth = startingSize * 20;
+        var startingHealth = startingSize * 25;
         var startingNutrition = startingHealth + 100;
 
         // Create new carnie object with random stats   
@@ -377,11 +377,11 @@ export default class Life extends React.Component {
             }
             decision.lifeForm = lifeForm;
         } else if(lifeForm.species === "carnie"){
-            if(lifeForm.health > 5000){
+            if(lifeForm.health > 2000){
                 lifeForm.size = creatureMaxSize;
             }
-            else if(lifeForm.health > 1000) {
-                lifeForm.size = lifeForm.health/50;
+            else if(lifeForm.health > 400) {
+                lifeForm.size = lifeForm.health/20;
             }
             else{
                 lifeForm.size = creatureMinSize;

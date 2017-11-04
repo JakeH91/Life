@@ -50,7 +50,7 @@ Next Change to Make
     <!-- (I0012) Food randomly disappears when other food is eaten. (01/11/17) 
             SOLUTION: Sort toEat array before removing, so it removes from the top down, not changing the index of               others as it goes. -->
     <!-- (I0013) Strange pauses in movement, possibly due to loops having to finish looping before action takes place.      (01/11/17) -->
-    (T0017) Creatures should gain defence as they grow.
+    <!-- (T0017) REMOVED! Creatures should gain defence as they grow. -->
     <!-- (T0018) Style leaderboard (hide before game start, show during game) (03/11/17) -->
     <!-- (T0019) Make leaderboard collapsable(tuck into the side, with button (or hover maybe?) to draw out/put in again) (03/11/17) -->
     (T0020) Final scoreboard should appear at end, with following stats:
@@ -59,3 +59,10 @@ Next Change to Make
         (T0020c) Number of Offspring
         (T0020d) Speed
         (T0020e) Sight
+
+04/11/17:
+    (T0021) Creatures should attempt to run away if they have an active predator
+    (T0022) If prey escapes, predator should reset it's target
+    (T0023) If prey escapes, it should gain defence points (upgrade task (T0017))
+    (T0024) If predator catches prey, it should gain attack points
+    (T0025) Amount of health loss/gain for prey/predator is determined by defence/attack points 

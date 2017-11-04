@@ -6,6 +6,6 @@ import './index.css';
 var destination = document.getElementById("container");
 
 ReactDOM.render(
-    <Life numCarnies="2" numHerbies="20" numLeaves="200" />,
+    <Life numCarnies="3" numHerbies="20" numLeaves="150" />,
     destination
 );
