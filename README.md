@@ -68,4 +68,4 @@ Next Change to Make
     <!-- (T0022) If prey escapes, predator should reset it's target (06/11/17) -->
     <!-- (T0023) If prey escapes, it should gain defence points (upgraded task (T0017))
     (T0024) If predator catches prey, it should gain attack points (06/11/17) -->
-    (T0025) Amount of health loss/gain for prey/predator is determined by defence/attack points 
+    <!-- (T0025) Amount of health loss/gain for prey/predator is determined by defence/attack points (06/11/17) -->

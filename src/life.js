@@ -137,8 +137,8 @@ export default class Life extends React.Component {
             nutrition: startingNutrition,
             health: startingHealth,
             energy: 100,
-            defence: 0,
-            attack: 0,
+            defence: 25,
+            attack: 50,
             foodTarget: null,
             pregnant: false,
             mateTarget: null,
@@ -185,8 +185,8 @@ export default class Life extends React.Component {
             nutrition: startingNutrition,
             health: startingHealth,
             energy: 100,
-            defence: 0,
-            attack: 0,
+            defence: 50,
+            attack: 50,
             foodTarget: null,
             pregnant: false,
             mateTarget: null,
@@ -614,11 +614,20 @@ export default class Life extends React.Component {
                 } else if(lifeForm.species === "carnie"){
                     targetIndex = this.state.herbies.indexOf(theTarget);
                 }
-                lifeForm.health += 50;
-                lifeForm.nutrition += 50;
-                lifeForm.energy += 10;
-                theTarget.health -= 50;
-                theTarget.nutrition -= 50;
+                var attVSDef = lifeForm.attack - theTarget.defence;
+                if(attVSDef >= 50){
+                    lifeForm.health += 50;
+                    lifeForm.nutrition += 50;
+                    lifeForm.energy += 10;
+                    theTarget.health -= 50;
+                    theTarget.nutrition -= 50;
+                } else if(attVSDef > 0){
+                    lifeForm.health += attVSDef;
+                    lifeForm.nutrition += attVSDef;
+                    lifeForm.energy += attVSDef/5;
+                    theTarget.health -= attVSDef;
+                    theTarget.nutrition -= attVSDef;
+                } 
                 if(lifeForm.species === "carnie"){
                     lifeForm.attack += 5;
                 }
