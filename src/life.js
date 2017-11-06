@@ -138,6 +138,7 @@ export default class Life extends React.Component {
             health: startingHealth,
             energy: 100,
             defence: 0,
+            attack: 0,
             foodTarget: null,
             pregnant: false,
             mateTarget: null,
@@ -184,6 +185,7 @@ export default class Life extends React.Component {
             nutrition: startingNutrition,
             health: startingHealth,
             energy: 100,
+            defence: 0,
             attack: 0,
             foodTarget: null,
             pregnant: false,
@@ -339,12 +341,11 @@ export default class Life extends React.Component {
                 
                 if(lifeForm.species === "herbie"){
                     lifeForm.activePredator = this.checkForEnemies(lifeForm);
-                    
                 }
                 if(lifeForm.activePredator){
                     decision = this.escape(lifeForm);
                 } 
-                
+
                 // else if((!lifeForm.pregnant) && (lifeForm.age > 3) && this.searchForMate(lifeForm)) { // searchForFood returns true or false
                 //     console.log(lifeForm.species + " is following a potential mate.");
                 //     decision = this.trackMate(lifeForm);
@@ -444,7 +445,9 @@ export default class Life extends React.Component {
                 enemy = enemyType[i];
             }
         }
-
+        if(enemy !== lifeForm.activePredator && lifeForm.activePredator !== null){
+            lifeForm.defence += 5;
+        }
         
         return enemy
     }
@@ -616,6 +619,9 @@ export default class Life extends React.Component {
                 lifeForm.energy += 10;
                 theTarget.health -= 50;
                 theTarget.nutrition -= 50;
+                if(lifeForm.species === "carnie"){
+                    lifeForm.attack += 5;
+                }
 
                 if(theTarget.health <= 0){
                     toEat = targetIndex;
