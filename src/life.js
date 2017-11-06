@@ -68,7 +68,7 @@ export default class Life extends React.Component {
         // Start the flow of time
         this.timeInterval = setInterval(() => this.updateTime(), 1000);
         
-        this.movementInterval = setInterval(() => this.updateGame(), 500);
+        this.movementInterval = setInterval(() => this.updateGame(), 100);
     }
 
     endGame() {
@@ -333,6 +333,9 @@ export default class Life extends React.Component {
                 lifeForm.image = 0;
                 lifeForm.health -= 4;
                 lifeForm.nutrition -= 4;
+                if(lifeForm.species === "herbie"){
+                    lifeForm.activePredator = this.checkForEnemies(lifeForm); 
+                }
                 if(lifeForm.activePredator){
                     decision = this.escape(lifeForm);
                 } else if((!lifeForm.pregnant) && (lifeForm.age > 3) && this.searchForMate(lifeForm)) { // searchForFood returns true or false
@@ -341,11 +344,10 @@ export default class Life extends React.Component {
                 } else if(lifeForm.foodTarget) { // searchForFood returns true or false
                     decision = this.hunt(lifeForm);
                 }  else {
-                    lifeForm.activePredator = this.checkForEnemies(lifeForm);
-                    if(!lifeForm.activePredator){
-                        lifeForm.foodTarget = this.searchForFood(lifeForm);
+                    
+                    lifeForm.foodTarget = this.searchForFood(lifeForm);
                         // lifeForm.mateTarget = this.searchForMate(lifeForm);
-                    }
+                    
                     // var search = this.searchForFood(lifeForm);
                     // lifeForm.foodTarget = search.target;
                     // foodIndex = search.index;
@@ -584,7 +586,7 @@ export default class Life extends React.Component {
             lifeForm.position = {top: newTopState, left: newLeftState};
             var toEat = -1;
         
-            if(theTarget.position.top === lifeForm.position.top && theTarget.position.left === lifeForm.position.left){
+            if((Math.abs(theTarget.position.top - lifeForm.position.top) < (heightAsPercentage/2)) && (Math.abs(theTarget.position.left - lifeForm.position.left) < (widthAsPercentage/2))){
                 if(lifeForm.species === "herbie"){
                     targetIndex = this.state.leaves.indexOf(theTarget);
                 } else if(lifeForm.species === "carnie"){

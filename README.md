@@ -63,8 +63,8 @@ Next Change to Make
 04/11/17:
     <!-- (T0021) Creatures should attempt to run away if they have an active predator (04/11/17) -->
         ISSUES:
-            (I0014) Creature should stop running after reached a safe distance
-            (I0015) If creature has food target, at the moment, it ignores it's potentially dangerous surroundings
+            <!-- (I0014) Creature should stop running after reached a safe distance
+            (I0015) If creature has food target, at the moment, it ignores it's potentially dangerous surroundings (06/11/17) -->
     (T0022) If prey escapes, predator should reset it's target
     (T0023) If prey escapes, it should gain defence points (upgrade task (T0017))
     (T0024) If predator catches prey, it should gain attack points
