@@ -117,7 +117,7 @@ export default class Life extends React.Component {
         var left = Math.floor(Math.random() * 100);
         var startingSize = creatureMinSize;
         var randomSight = Math.floor(Math.random() * 10) + 10;
-        var sightLoss = (randomSight*7.5)/100;
+        var sightLoss = randomSight/13;
         var randomSpeed = Math.floor(Math.random() * 2)+ 1;
         var startingHealth = startingSize * 15;
         var startingNutrition = startingHealth + 100;
@@ -165,7 +165,7 @@ export default class Life extends React.Component {
         var left = Math.floor(Math.random() * 100);
         var startingSize = creatureMinSize;
         var randomSight = Math.floor(Math.random() * 10) + 10;
-        var sightLoss = (randomSight*7.5)/100;
+        var sightLoss = randomSight/13;
         var randomSpeed = Math.floor(Math.random() * 2)+ 1;
         var startingHealth = startingSize * 25;
         var startingNutrition = startingHealth + 100;
@@ -251,7 +251,7 @@ export default class Life extends React.Component {
         for(var i = 0; i < herbies.length; i++){
             var tempHerbies = herbies.slice();
             var herbieSight = tempHerbies[i].sense.sight;
-            if(time > 0 && time < 13){
+            if(time > 0 && time < 12){
                 herbieSight -= tempHerbies[i].sense.sightLoss;
             } else if (time > 12){
                 herbieSight += tempHerbies[i].sense.sightLoss;
@@ -264,7 +264,7 @@ export default class Life extends React.Component {
         for(var j = 0; j < carnies.length; j++){
             var tempCarnies = carnies.slice()
             var carnieSight = tempCarnies[j].sense.sight;
-            if(time > 0 && time < 13){
+            if(time > 0 && time < 12){
                 carnieSight -= tempCarnies[j].sense.sightLoss;
             } else if (time > 12){
                 carnieSight += tempCarnies[j].sense.sightLoss;
