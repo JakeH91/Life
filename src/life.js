@@ -5,7 +5,7 @@ import Leaf from './leaf.js';
 import Background from './background.js';
 import Leaderboard from './leaderboard.js';
 
-const creatureMinSize = 15;
+const creatureMinSize = 10;
 const creatureMaxSize = 35;
 var totalLifeForms = {
     herbies: 0,
@@ -432,7 +432,7 @@ export default class Life extends React.Component {
         if(lifeForm.health > 700){
             lifeForm.size = creatureMaxSize;
         }
-        else if(lifeForm.health > 400) {
+        else if(lifeForm.health > 250) {
             lifeForm.size = lifeForm.health/20;
         }
         else{
