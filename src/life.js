@@ -140,7 +140,8 @@ export default class Life extends React.Component {
             defence: 25,
             attack: 50,
             foodTarget: null,
-            pregnant: false,
+            isPregnant: false,
+            pregnancyTime: 0,
             mateTarget: null,
             activePredator: null,
             dead: false,
@@ -188,7 +189,8 @@ export default class Life extends React.Component {
             defence: 50,
             attack: 50,
             foodTarget: null,
-            pregnant: false,
+            isPregnant: false,
+            pregnancyTime: 0,
             mateTarget: null,
             activePredator: null,
             dead: false,
@@ -331,9 +333,15 @@ export default class Life extends React.Component {
     }
 
     decide(lifeForm) {
-        var foodIndex = -1;
         var decision;
         if(!lifeForm.dead){
+            if(lifeForm.isPregnant){
+                lifeForm.pregnancyTime += 0.1;
+                if(lifeForm.pregnancyTime === 24){
+                    console.log(lifeForm.key + " should give birth now!");
+                }
+            }
+            
             if(lifeForm.age === 96 || lifeForm.age === 120 || lifeForm.age === 144 || lifeForm.age === 168){
                 lifeForm.sense.sight -= 0.2;
                 lifeForm.speed -= 0.02;
@@ -350,14 +358,21 @@ export default class Life extends React.Component {
                 if(lifeForm.species === "herbie"){
                     lifeForm.activePredator = this.checkForEnemies(lifeForm);
                 }
-                if(lifeForm.activePredator){
-                    decision = this.escape(lifeForm);
-                } 
 
-                // else if((!lifeForm.pregnant) && (lifeForm.age > 3) && this.searchForMate(lifeForm)) { // searchForFood returns true or false
-                //     console.log(lifeForm.species + " is following a potential mate.");
-                //     decision = this.trackMate(lifeForm);
-                // } 
+                if(lifeForm.activePredator){
+                        decision = this.escape(lifeForm);
+                    } 
+                else if(lifeForm.age > 24 && !(lifeForm.isPregnant) && lifeForm.energy > 100 && lifeForm.health > 500){
+                    if(!lifeForm.mateTarget){
+                        lifeForm.mateTarget = this.searchForMate(lifeForm);
+                    }
+                    if(lifeForm.mateTarget){
+                        decision = this.trackMate(lifeForm);
+                    } else {
+                        decision = this.moveRandomly(lifeForm);
+                    }
+
+                }
                 else if(lifeForm.energy < 200 || lifeForm.health < 1000) { // searchForFood returns true or false
                     lifeForm.foodTarget = this.searchForFood(lifeForm);
                     if(lifeForm.foodTarget){
@@ -369,21 +384,7 @@ export default class Life extends React.Component {
                 }
                 else {
                     lifeForm.energy += 0.5;
-                    // lifeForm.mateTarget = this.searchForMate(lifeForm);
-                    
-                    // var search = this.searchForFood(lifeForm);
-                    // lifeForm.foodTarget = search.target;
-                    // foodIndex = search.index;
-                    // if(search.index !== -1){
-                    //     console.log(lifeForm.key + " has set his target to " + search.target.key);
-                    // } else {
-                    //     console.log(lifeForm.key + " will need to keep searching.");
-                    // }
-
-                    decision = this.moveRandomly(lifeForm);
-                    
-                    
-                    
+                    decision = this.moveRandomly(lifeForm);    
                 }
             } 
             else{
@@ -428,8 +429,7 @@ export default class Life extends React.Component {
         return {
             lifeForm: decision.lifeForm,
             toRemove: decision.toRemove,
-            toEat: decision.toEat,
-            foodIndex: foodIndex
+            toEat: decision.toEat
         };
 
 
@@ -663,13 +663,94 @@ export default class Life extends React.Component {
         }
     }
 
-    searchForMate() {
+    searchForMate(lifeForm) {
         // Logic to be added
-        return null;
+        var sensingDistance = Math.sqrt((Math.pow(lifeForm.sense.sight, 2)) + (Math.pow(lifeForm.sense.sight, 2)));
+        var mate;
+        if(lifeForm.species === "herbie"){
+            mate = this.state.herbies;
+        } else if(lifeForm.species === "carnie"){
+            mate = this.state.carnies;
+        }
+
+        var target = null;
+        for(var i = 0; i < mate.length; i++){
+            if(mate[i].age > 24 && !(mate[i].isPregnant) && !(mate[i].health < 500) && mate[i] !== lifeForm){
+                var topDistanceToMate = lifeForm.position.top - mate[i].position.top;
+                var leftDistanceToMate = lifeForm.position.left - mate[i].position.left;
+                var distanceToMate = Math.sqrt((Math.pow(topDistanceToMate, 2)) + (Math.pow(leftDistanceToMate, 2)));
+                
+                if(distanceToMate < sensingDistance){
+                    target = mate[i];
+                }
+            }  
+        }
+        return target;
+        
     }
 
-    trackMate() {
-        // Logic to be added
+    trackMate(lifeForm) {
+        var theTarget = lifeForm.mateTarget;
+        if(theTarget){
+            lifeForm.energy -= 1;
+            var topDirection, leftDirection;
+            //Set difference between top positions of creature and food to topDifference
+            var topDifference = lifeForm.position.top - theTarget.position.top;
+            // Set difference between left positions of creature and food to leftDifference
+            var leftDifference = lifeForm.position.left - theTarget.position.left;
+
+            var heightAsPercentage = (lifeForm.size * 100)/documentHeight();
+            var widthAsPercentage = (lifeForm.size * 100)/documentWidth();
+
+            // If it's on the same y-axis, no need to changein that direction.
+            if(Math.abs(topDifference) <= lifeForm.speed){
+                
+                topDirection = -(topDifference);
+            } 
+            // If it's below, move downwards.
+            else if(topDifference < -(lifeForm.speed)) {
+                topDirection = lifeForm.speed;
+            } 
+            // If it's above, move upwards.
+            else if(topDifference > lifeForm.speed) {
+                topDirection = -(lifeForm.speed);
+            }
+
+            // If it's on the same x-axis, no need to change in that direction.
+            if(Math.abs(leftDifference) <= lifeForm.speed){
+                leftDirection = -(leftDifference);
+            }
+            // If it's to the right, move right.
+            else if(leftDifference < -(lifeForm.speed)) {
+                leftDirection = lifeForm.speed;
+            }
+            // If it's to the left, move left.
+            else if(leftDifference > lifeForm.speed) {
+                leftDirection = -(lifeForm.speed);
+            }
+
+            var newTopState = lifeForm.position.top + topDirection;
+            var newLeftState = lifeForm.position.left + leftDirection;
+            
+            lifeForm.position = {top: newTopState, left: newLeftState};
+        
+            if((Math.abs(theTarget.position.top - lifeForm.position.top) < (heightAsPercentage/2)) && (Math.abs(theTarget.position.left - lifeForm.position.left) < (widthAsPercentage/2))){
+                var chanceOfPregnancy = Math.random();
+                if(chanceOfPregnancy > 0.5){
+                    lifeForm.isPregnant = true;
+                    console.log(lifeForm.key + " is pregnant!");
+                }
+            }
+
+        } else {
+            lifeForm.mateTarget = null;
+        }
+
+        return {
+            lifeForm: lifeForm,
+            toRemove: false,
+            toEat: -1
+        }
     }
 
     mate() {
