@@ -334,6 +334,14 @@ export default class Life extends React.Component {
         var foodIndex = -1;
         var decision;
         if(!lifeForm.dead){
+            if(lifeForm.age === 96 || lifeForm.age === 120 || lifeForm.age === 144 || lifeForm.age === 168){
+                lifeForm.sense.sight -= 0.2;
+                lifeForm.speed -= 0.02;
+            } else if(lifeForm.age === 180 || lifeForm.age === 192 || lifeForm.age === 204 || lifeForm.age === 216){
+                lifeForm.sense.sight -= 0.1;
+                lifeForm.speed -= 0.005;
+            }
+
             if(lifeForm.sense.sight > 3 && lifeForm.isAwake && lifeForm.energy > 10){
                 lifeForm.image = 0;
                 lifeForm.health -= 4;
@@ -379,7 +387,11 @@ export default class Life extends React.Component {
                 }
             } 
             else{
-                lifeForm.health -= 0.1;
+                if(lifeForm.age > 96){
+                    lifeForm.health -= 0.5;
+                } else {
+                    lifeForm.health -= 0.1;
+                }
                 lifeForm.nutrition -= 1;
                 lifeForm.energy += 1;
                 decision = this.sleep(lifeForm);

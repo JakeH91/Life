@@ -81,8 +81,7 @@ export default class Leaderboard extends React.Component{
                             <tr>
                                 <th>Name</th> 
                                 <th>Health</th>
-                                <th>Defence</th>
-                                <th>Attack</th>
+                                <th>Age</th>
                                 <th>Sight</th> 
                                 <th>Speed</th>
                             </tr>
@@ -93,8 +92,7 @@ export default class Leaderboard extends React.Component{
                                 <tr>
                                     <td style={tdStyle}>{creature.key}</td>
                                     <td style={tdStyle}>{creature.health.toPrecision(5)}</td>
-                                    <td style={tdStyle}>{creature.defence}</td>
-                                    <td style={tdStyle}>{creature.attack}</td>
+                                    <td style={tdStyle}>{creature.age}</td>
                                     <td style={tdStyle}>{creature.sense.sight.toPrecision(3)}</td>
                                     <td style={tdStyle}>{creature.speed}</td>
                                 </tr>

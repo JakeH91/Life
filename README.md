@@ -69,3 +69,9 @@ Next Change to Make
     <!-- (T0023) If prey escapes, it should gain defence points (upgraded task (T0017))
     (T0024) If predator catches prey, it should gain attack points (06/11/17) -->
     <!-- (T0025) Amount of health loss/gain for prey/predator is determined by defence/attack points (06/11/17) -->
+
+07/11/17:
+    (T0026) If creatures aren't being chased, are old enough, and are not too hungry, they should search for a mate.
+    (T0027) If they find a mate, one should hold a baby for 1 day
+    (T0028) If pregnancy if successful, a new creature should be generated at the same spot as the parent
+    <!-- (T0029) Once creature reaches a certain age, speed and sight deteriorate (07/11/17) -->
