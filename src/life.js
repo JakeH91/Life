@@ -60,10 +60,24 @@ export default class Life extends React.Component {
             this.generateLeaf();
         }
         for(var j = 0; j < this.props.numHerbies; j++) {
-            this.generateHerbie();
+            var herbieObject = {
+                top:    Math.floor(Math.random() * 100),
+                left:   Math.floor(Math.random() * 100),
+                sight:  Math.floor(Math.random() * 10) + 10,
+                speed:  Math.floor(Math.random() * 2)+ 1
+            };
+            
+            this.generateHerbie(herbieObject);
         }
         for(var k = 0; k < this.props.numCarnies; k++) {
-            this.generateCarnie();
+            var carnieObject = {
+                top:    Math.floor(Math.random() * 100),
+                left:   Math.floor(Math.random() * 100),
+                sight:  Math.floor(Math.random() * 10) + 10,
+                speed:  Math.floor(Math.random() * 2)+ 1
+            };
+            
+            this.generateCarnie(carnieObject);
         }
         // Start the flow of time
         this.timeInterval = setInterval(() => this.updateTime(), 1000);
@@ -111,31 +125,24 @@ export default class Life extends React.Component {
         });
     }
 
-    generateHerbie() {
-        // Randomly generate stats
-        var top = Math.floor(Math.random() * 100);
-        var left = Math.floor(Math.random() * 100);
-        var startingSize = creatureMinSize;
-        var randomSight = Math.floor(Math.random() * 10) + 10;
-        var sightLoss = randomSight/13;
-        var randomSpeed = Math.floor(Math.random() * 2)+ 1;
-        var startingHealth = startingSize * 15;
-        var startingNutrition = startingHealth + 100;
+    generateHerbie(arg) {
         // Create new herbie object with random stats
         
         var newHerbie = {
             key: "herbie" + totalLifeForms.herbies,
-            position: { top: top, left: left },
-            size: startingSize,
+            position: { top: arg.top, left: arg.left },
+            size: creatureMinSize,
             species: "herbie",
             age: 0,
             sense: { 
-                sight: randomSight,
-                sightLoss: sightLoss
+                sightMax: arg.sight,
+                sight: arg.sight,
+                sightLoss: (arg.sight)/13
             },
-            speed: randomSpeed,
-            nutrition: startingNutrition,
-            health: startingHealth,
+            speed: arg.speed,
+            speedMax: arg.speed,
+            nutrition: (creatureMinSize * 15) + 100,
+            health: creatureMinSize * 15,
             energy: 100,
             defence: 25,
             attack: 50,
@@ -160,31 +167,23 @@ export default class Life extends React.Component {
         });
     }
 
-    generateCarnie() {
-        // Randomly generate stats
-        var top = Math.floor(Math.random() * 100);
-        var left = Math.floor(Math.random() * 100);
-        var startingSize = creatureMinSize;
-        var randomSight = Math.floor(Math.random() * 10) + 10;
-        var sightLoss = randomSight/13;
-        var randomSpeed = Math.floor(Math.random() * 2)+ 1;
-        var startingHealth = startingSize * 25;
-        var startingNutrition = startingHealth + 100;
-
+    generateCarnie(arg) {
         // Create new carnie object with random stats   
         var newCarnie = {
             key: "carnie" + totalLifeForms.carnies,
-            position: { top: top, left: left },
-            size: startingSize,
+            position: { top: arg.top, left: arg.left },
+            size: creatureMinSize,
             species: "carnie",
             age: 0,
             sense: { 
-                sight: randomSight,
-                sightLoss: sightLoss
+                sightMax: arg.sight,
+                sight: arg.sight,
+                sightLoss: (arg.sight)/13
             },
-            speed: randomSpeed,
-            nutrition: startingNutrition,
-            health: startingHealth,
+            speed: arg.speed,
+            speedMax: arg.speed,
+            nutrition: (creatureMinSize * 25) + 100,
+            health: creatureMinSize * 25,
             energy: 100,
             defence: 50,
             attack: 50,
@@ -280,11 +279,11 @@ export default class Life extends React.Component {
 
 
     updateGame() {
-        var copyHerbies = this.state.herbies.slice();
+        var copyHerbies = this.state.herbies;
         var herbieRemovals = [];
-        var copyCarnies = this.state.carnies.slice();
+        var copyCarnies = this.state.carnies;
         var carnieRemovals = [];
-        var copyLeaves = this.state.leaves.slice();
+        var copyLeaves = this.state.leaves;
         var leafRemovals = [];
 
         for(var i = 0; i < this.state.herbies.length; i++){
@@ -337,8 +336,26 @@ export default class Life extends React.Component {
         if(!lifeForm.dead){
             if(lifeForm.isPregnant){
                 lifeForm.pregnancyTime += 0.1;
-                if(lifeForm.pregnancyTime === 24){
-                    console.log(lifeForm.key + " should give birth now!");
+                if(lifeForm.pregnancyTime >= 24){
+                    if(lifeForm.species === "herbie"){
+                        var herbieObject = {
+                            top:    lifeForm.position.top,
+                            left:   lifeForm.position.left,
+                            sight:  lifeForm.sense.sightMax,
+                            speed:  lifeForm.speedMax
+                        };
+                        this.generateHerbie(herbieObject);
+                    } else if(lifeForm.species === "carnie"){
+                        var carnieObject = {
+                            top:    lifeForm.position.top,
+                            left:   lifeForm.position.left,
+                            sight:  lifeForm.sense.sightMax,
+                            speed:  lifeForm.speedMax
+                        };
+                        this.generateCarnie(carnieObject);
+                    }
+                    lifeForm.isPregnant = false;
+                    lifeForm.pregnancyTime = 0;
                 }
             }
             
@@ -691,59 +708,54 @@ export default class Life extends React.Component {
 
     trackMate(lifeForm) {
         var theTarget = lifeForm.mateTarget;
-        if(theTarget){
-            lifeForm.energy -= 1;
-            var topDirection, leftDirection;
-            //Set difference between top positions of creature and food to topDifference
-            var topDifference = lifeForm.position.top - theTarget.position.top;
-            // Set difference between left positions of creature and food to leftDifference
-            var leftDifference = lifeForm.position.left - theTarget.position.left;
+        lifeForm.energy -= 1;
+        var topDirection, leftDirection;
+        //Set difference between top positions of creature and food to topDifference
+        var topDifference = lifeForm.position.top - theTarget.position.top;
+        // Set difference between left positions of creature and food to leftDifference
+        var leftDifference = lifeForm.position.left - theTarget.position.left;
 
-            var heightAsPercentage = (lifeForm.size * 100)/documentHeight();
-            var widthAsPercentage = (lifeForm.size * 100)/documentWidth();
+        var heightAsPercentage = (lifeForm.size * 100)/documentHeight();
+        var widthAsPercentage = (lifeForm.size * 100)/documentWidth();
 
-            // If it's on the same y-axis, no need to changein that direction.
-            if(Math.abs(topDifference) <= lifeForm.speed){
-                
-                topDirection = -(topDifference);
-            } 
-            // If it's below, move downwards.
-            else if(topDifference < -(lifeForm.speed)) {
-                topDirection = lifeForm.speed;
-            } 
-            // If it's above, move upwards.
-            else if(topDifference > lifeForm.speed) {
-                topDirection = -(lifeForm.speed);
-            }
-
-            // If it's on the same x-axis, no need to change in that direction.
-            if(Math.abs(leftDifference) <= lifeForm.speed){
-                leftDirection = -(leftDifference);
-            }
-            // If it's to the right, move right.
-            else if(leftDifference < -(lifeForm.speed)) {
-                leftDirection = lifeForm.speed;
-            }
-            // If it's to the left, move left.
-            else if(leftDifference > lifeForm.speed) {
-                leftDirection = -(lifeForm.speed);
-            }
-
-            var newTopState = lifeForm.position.top + topDirection;
-            var newLeftState = lifeForm.position.left + leftDirection;
+        // If it's on the same y-axis, no need to changein that direction.
+        if(Math.abs(topDifference) <= lifeForm.speed){
             
-            lifeForm.position = {top: newTopState, left: newLeftState};
-        
-            if((Math.abs(theTarget.position.top - lifeForm.position.top) < (heightAsPercentage/2)) && (Math.abs(theTarget.position.left - lifeForm.position.left) < (widthAsPercentage/2))){
-                var chanceOfPregnancy = Math.random();
-                if(chanceOfPregnancy > 0.5){
-                    lifeForm.isPregnant = true;
-                    console.log(lifeForm.key + " is pregnant!");
-                }
-            }
+            topDirection = -(topDifference);
+        } 
+        // If it's below, move downwards.
+        else if(topDifference < -(lifeForm.speed)) {
+            topDirection = lifeForm.speed;
+        } 
+        // If it's above, move upwards.
+        else if(topDifference > lifeForm.speed) {
+            topDirection = -(lifeForm.speed);
+        }
 
-        } else {
-            lifeForm.mateTarget = null;
+        // If it's on the same x-axis, no need to change in that direction.
+        if(Math.abs(leftDifference) <= lifeForm.speed){
+            leftDirection = -(leftDifference);
+        }
+        // If it's to the right, move right.
+        else if(leftDifference < -(lifeForm.speed)) {
+            leftDirection = lifeForm.speed;
+        }
+        // If it's to the left, move left.
+        else if(leftDifference > lifeForm.speed) {
+            leftDirection = -(lifeForm.speed);
+        }
+
+        var newTopState = lifeForm.position.top + topDirection;
+        var newLeftState = lifeForm.position.left + leftDirection;
+        
+        lifeForm.position = {top: newTopState, left: newLeftState};
+    
+        if((Math.abs(theTarget.position.top - lifeForm.position.top) < (heightAsPercentage/2)) && (Math.abs(theTarget.position.left - lifeForm.position.left) < (widthAsPercentage/2))){
+            var chanceOfPregnancy = Math.random();
+            if(chanceOfPregnancy > 0.5){
+                lifeForm.isPregnant = true;
+                console.log(lifeForm.key + " is pregnant!");
+            }
         }
 
         return {

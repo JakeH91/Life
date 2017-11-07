@@ -72,6 +72,6 @@ Next Change to Make
 
 07/11/17:
     <!-- (T0026) If creatures aren't being chased, are old enough, and are not too hungry, they should search for a mate. (07/11/17) -->
-    (T0027) If they find a mate, one should hold a baby for 1 day
-    (T0028) If pregnancy if successful, a new creature should be generated at the same spot as the parent
+    <!-- (T0027) If they find a mate, one should hold a baby for 1 day (07/11/17) -->
+    <!-- (T0028) If pregnancy if successful, a new creature should be generated at the same spot as the parent (07/11/17) -->
     <!-- (T0029) Once creature reaches a certain age, speed and sight deteriorate (07/11/17) -->
