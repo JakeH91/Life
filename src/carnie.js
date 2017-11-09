@@ -2,12 +2,12 @@ import React from 'react';
 
 class Carnie extends React.Component {
     render() {
-        var carnieImageString = require("./carnie.png");
-        var changeImage = Math.floor(this.props.image);
-        if(changeImage !== 0 && changeImage < 5){
-            carnieImageString = require("./carnieDying" + changeImage + ".png");
-        } else if(changeImage >= 5){
-            carnieImageString = require("./carnieSleeping" + changeImage + ".png");
+        var carnieImageString = require("./carnieMoving.gif");
+        var changeImage = this.props.state;
+        if(changeImage === "decaying"){
+            carnieImageString = require("./carnieDying.gif");
+        } else if(changeImage === "sleeping"){
+            carnieImageString = require("./carnieSleeping.gif");
         }
         var carnieStyle = {
             height: this.props.size,

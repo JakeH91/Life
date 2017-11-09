@@ -74,7 +74,7 @@ export default class Life extends React.Component {
                 top:    Math.floor(Math.random() * 100),
                 left:   Math.floor(Math.random() * 100),
                 sight:  Math.floor(Math.random() * 10) + 10,
-                speed:  Math.floor(Math.random() * 2)+ 1
+                // speed:  Math.floor(Math.random() * 2)+ 1
             };
             
             this.generateCarnie(carnieObject);
@@ -143,6 +143,7 @@ export default class Life extends React.Component {
             speedMax: arg.speed,
             nutrition: (creatureMinSize * 15) + 100,
             health: creatureMinSize * 15,
+            isHungry: true,
             energy: 100,
             defence: 25,
             attack: 50,
@@ -153,7 +154,8 @@ export default class Life extends React.Component {
             activePredator: null,
             dead: false,
             isAwake: true,
-            image: 0
+            image: 0,
+            state: "moving"
         }
 
         // Copy the herbies array and push the new herbie to the end of that array
@@ -180,10 +182,11 @@ export default class Life extends React.Component {
                 sight: arg.sight,
                 sightLoss: (arg.sight)/13
             },
-            speed: arg.speed,
-            speedMax: arg.speed,
+            speed: 2,
+            speedMax: 2,
             nutrition: (creatureMinSize * 25) + 100,
-            health: creatureMinSize * 25,
+            health: creatureMinSize * 50,
+            isHungry: true,
             energy: 100,
             defence: 50,
             attack: 50,
@@ -194,7 +197,8 @@ export default class Life extends React.Component {
             activePredator: null,
             dead: false,
             isAwake: true,
-            image: 0
+            deathCount: 0,
+            state: "moving"
         }
 
         // Copy the carnies array and push the new carnie to the end of that array
@@ -350,7 +354,7 @@ export default class Life extends React.Component {
                             top:    lifeForm.position.top,
                             left:   lifeForm.position.left,
                             sight:  lifeForm.sense.sightMax,
-                            speed:  lifeForm.speedMax
+                            // speed:  lifeForm.speedMax
                         };
                         this.generateCarnie(carnieObject);
                     }
@@ -390,7 +394,7 @@ export default class Life extends React.Component {
                     }
 
                 }
-                else if(lifeForm.energy < 200 || lifeForm.health < 1000) { // searchForFood returns true or false
+                else if(lifeForm.isHungry) { // searchForFood returns true or false
                     lifeForm.foodTarget = this.searchForFood(lifeForm);
                     if(lifeForm.foodTarget){
                         decision = this.hunt(lifeForm);
@@ -429,14 +433,37 @@ export default class Life extends React.Component {
             decision = this.decay(lifeForm);
         }
 
-        if(lifeForm.health > 700){
-            lifeForm.size = creatureMaxSize;
+        if(lifeForm.species === "herbie"){
+            if(lifeForm.health > 525){
+                lifeForm.size = creatureMaxSize;
+            }
+            else if(lifeForm.health > 150) {
+                lifeForm.size = lifeForm.health/15;
+            }
+            else{
+                lifeForm.size = creatureMinSize;
+            }
+            if(lifeForm.energy > 200 || lifeForm.health > 1000){
+                lifeForm.isHungry = false;
+            } else {
+                lifeForm.isHungry = true;
+            }
         }
-        else if(lifeForm.health > 250) {
-            lifeForm.size = lifeForm.health/20;
-        }
-        else{
-            lifeForm.size = creatureMinSize;
+        else if(lifeForm.species === "carnie"){
+            if(lifeForm.health > 1750){
+                lifeForm.size = creatureMaxSize;
+            }
+            else if(lifeForm.health > 500) {
+                lifeForm.size = lifeForm.health/50;
+            }
+            else{
+                lifeForm.size = creatureMinSize;
+            }   
+            if(lifeForm.energy > 300 || lifeForm.health > 2000){
+                lifeForm.isHungry = false;
+            } else {
+                lifeForm.isHungry = true;
+            }    
         }
 
         decision.lifeForm = lifeForm;
@@ -487,6 +514,7 @@ export default class Life extends React.Component {
     
     escape(lifeForm) {
         // Logic to be added
+        lifeForm.state = "moving";
         var theEnemy = lifeForm.activePredator;
         var heightAsPercentage = (lifeForm.size * 100)/documentHeight();
         var widthAsPercentage = (lifeForm.size * 100)/documentWidth();
@@ -636,37 +664,62 @@ export default class Life extends React.Component {
             
             lifeForm.position = {top: newTopState, left: newLeftState};
             var toEat = -1;
-        
+            var attVSDef = lifeForm.attack - theTarget.defence;
             if((Math.abs(theTarget.position.top - lifeForm.position.top) < (heightAsPercentage/2)) && (Math.abs(theTarget.position.left - lifeForm.position.left) < (widthAsPercentage/2))){
                 if(lifeForm.species === "herbie"){
                     targetIndex = this.state.leaves.indexOf(theTarget);
-                } else if(lifeForm.species === "carnie"){
-                    targetIndex = this.state.herbies.indexOf(theTarget);
-                }
-                var attVSDef = lifeForm.attack - theTarget.defence;
-                if(attVSDef >= 50){
-                    lifeForm.health += 50;
-                    lifeForm.nutrition += 50;
-                    lifeForm.energy += 10;
-                    theTarget.health -= 50;
-                    theTarget.nutrition -= 50;
-                } else if(attVSDef > 0){
-                    lifeForm.health += attVSDef;
-                    lifeForm.nutrition += attVSDef;
-                    lifeForm.energy += attVSDef/5;
-                    theTarget.health -= attVSDef;
-                    theTarget.nutrition -= attVSDef;
-                } 
-                if(lifeForm.species === "carnie"){
-                    lifeForm.attack += 5;
-                }
+                    if(attVSDef >= 50){
+                        lifeForm.health += 50;
+                        lifeForm.nutrition += 50;
+                        lifeForm.energy += 10;
+                        theTarget.health -= 50;
+                        theTarget.nutrition -= 50;
+                    } else if(attVSDef > 0){
+                        lifeForm.health += attVSDef;
+                        lifeForm.nutrition += attVSDef;
+                        lifeForm.energy += attVSDef/5;
+                        theTarget.health -= attVSDef;
+                        theTarget.nutrition -= attVSDef;
+                    } 
+                    
+                    if(theTarget.health <= 0){
+                        toEat = targetIndex;
+                        lifeForm.foodTarget = null;
+                        lifeForm.health += theTarget.nutrition;
+                        lifeForm.nutrition += theTarget.nutrition;
+                    }
 
-                if(theTarget.health <= 0){
-                    toEat = targetIndex;
-                    lifeForm.foodTarget = null;
-                    lifeForm.health += theTarget.nutrition;
-                    lifeForm.nutrition += theTarget.nutrition;
+                } 
+                
+                else if(lifeForm.species === "carnie"){
+                    targetIndex = this.state.herbies.indexOf(theTarget);
+                    if(attVSDef >= 100){
+                        lifeForm.health += 100;
+                        lifeForm.nutrition += 100;
+                        theTarget.health -= 100;
+                        theTarget.nutrition -= 100;
+                    } else if(attVSDef > 0){
+                        lifeForm.health += attVSDef;
+                        lifeForm.nutrition += attVSDef;      
+                        theTarget.health -= attVSDef;
+                        theTarget.nutrition -= attVSDef;
+                    } 
+                        
+                    lifeForm.energy += 20;
+                    lifeForm.attack += 5;
+
+                    
+    
+                    if(theTarget.health <= 0){
+                        toEat = targetIndex;
+                        lifeForm.foodTarget = null;
+                        lifeForm.health += theTarget.nutrition;
+                        lifeForm.nutrition += theTarget.nutrition;
+                    }
                 }
+                lifeForm.state = "eating";
+            } else {
+                lifeForm.state = "moving";
             }
 
         } else {
@@ -707,6 +760,7 @@ export default class Life extends React.Component {
     }
 
     trackMate(lifeForm) {
+        lifeForm.state = "moving";
         var theTarget = lifeForm.mateTarget;
         lifeForm.energy -= 1;
         var topDirection, leftDirection;
@@ -756,6 +810,9 @@ export default class Life extends React.Component {
                 lifeForm.isPregnant = true;
                 console.log(lifeForm.key + " is pregnant!");
             }
+            lifeForm.state = "mating";
+        } else {
+            lifeForm.state = "moving";
         }
 
         return {
@@ -770,6 +827,7 @@ export default class Life extends React.Component {
     }
     
     moveRandomly(lifeForm){
+        lifeForm.state = "moving";
         lifeForm.energy -= 1;
         var topDirection = Math.floor(Math.random() * 2);
         var leftDirection = Math.floor(Math.random() * 2);
@@ -803,6 +861,7 @@ export default class Life extends React.Component {
 
     sleep(lifeForm) {
         lifeForm.isAwake = false;
+        lifeForm.state = "sleeping";
         if(lifeForm.energy > 70){
             lifeForm.isAwake = true;
         }
@@ -821,15 +880,13 @@ export default class Life extends React.Component {
 
     decay(lifeForm) {
         var toRemove = false;
-        if(lifeForm.image >= 5){
-            lifeForm.image = 0.5;
-        } else if(lifeForm.image < 4.5){
-            lifeForm.image += 0.5;
-        } else if(lifeForm.image === 4.5){
+        lifeForm.state = "decaying";
+        lifeForm.deathCount++;
+        if(lifeForm.deathCount >= 40){
             toRemove = true;
         }
 
-        lifeForm.nutrition -= 30;
+        lifeForm.nutrition -= 4;
 
         return {
             lifeForm: lifeForm,
@@ -878,10 +935,10 @@ export default class Life extends React.Component {
             <div>
                 <button id="startButton" onClick={this.handleClick} style={buttonStyle}>CREATE LIFE</button>
                 {this.state.herbies.map(herbie =>
-                    <Herbie size={herbie.size} top={herbie.position.top} left={herbie.position.left} key={herbie.key} image={herbie.image} />
+                    <Herbie size={herbie.size} top={herbie.position.top} left={herbie.position.left} key={herbie.key} state={herbie.state} />
                 )}
                 {this.state.carnies.map(carnie =>
-                    <Carnie size={carnie.size} top={carnie.position.top} left={carnie.position.left} key={carnie.key} image={carnie.image} />
+                    <Carnie size={carnie.size} top={carnie.position.top} left={carnie.position.left} key={carnie.key} state={carnie.state} />
                 )}
                 {this.state.leaves.map(leaf =>
                     <Leaf top={leaf.position.top} left={leaf.position.left} key={leaf.key} />

@@ -7,7 +7,7 @@ class Herbie extends React.Component {
         if(changeImage !== 0 && changeImage < 5){
             herbieImageString = require("./herbieDying" + changeImage + ".png");
         } else if(changeImage >= 5){
-            herbieImageString = require("./herbieSleeping" + changeImage + ".png");
+            herbieImageString = require("./herbieSleeping.gif");
         }
         var herbieStyle = {
             height: this.props.size,
