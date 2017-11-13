@@ -154,7 +154,7 @@ export default class Life extends React.Component {
             activePredator: null,
             dead: false,
             isAwake: true,
-            image: 0,
+            deathCount: 0,
             state: "moving"
         }
 

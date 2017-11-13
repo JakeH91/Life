@@ -3,10 +3,10 @@ import React from 'react';
 class Herbie extends React.Component {
     render() {
         var herbieImageString = require("./herbie.png");
-        var changeImage = Math.floor(this.props.image);
-        if(changeImage !== 0 && changeImage < 5){
-            herbieImageString = require("./herbieDying" + changeImage + ".png");
-        } else if(changeImage >= 5){
+        var changeImage = this.props.state;
+        if(changeImage === "decaying"){
+            herbieImageString = require("./herbieDying.gif");
+        } else if(changeImage === "sleeping"){
             herbieImageString = require("./herbieSleeping.gif");
         }
         var herbieStyle = {
